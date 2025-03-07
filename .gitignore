@@ -1,0 +1,28 @@
+# Build directories
+build/native/
+build/wasm/
+
+# CMake artifacts
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.o
+*.a
+*.so
+*.dylib
+*.js
+*.wasm
+*.wast
+
+# Temporary files
+*.swp
+*~
+
+# IDE/OS files
+.vscode/*
+!.vscode/settings.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
