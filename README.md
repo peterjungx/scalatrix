@@ -16,16 +16,17 @@ Examples for native CLI and Wasm browser visualization.
 
 ## Directory Structure
 
-> scalatrix/
-> ├── examples/
-> │   ├── native/         # Native example (CLI)
-> │   └── wasm/           # Wasm example (browser)
-> ├── include/scalatrix/  # Header files
-> ├── src/                # Source files
-> ├── build/              # Build artifacts (native and wasm)
-> ├── setup_cmake.sh      # Setup script
-> └── CMakeLists.txt      # Root CMake config
-
+```
+scalatrix/
+├── examples/
+│   ├── native/         # Native example (CLI)
+│   └── wasm/           # Wasm example (browser)
+├── include/scalatrix/  # Header files
+├── src/                # Source files
+├── build/              # Build artifacts (native and wasm)
+├── setup_cmake.sh      # Setup script
+└── CMakeLists.txt      # Root CMake config
+```
 
 ## Building
 
