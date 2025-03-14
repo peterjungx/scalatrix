@@ -13,6 +13,7 @@ set(SOURCES
     src/scale.cpp
     src/lattice.cpp
     src/params.cpp
+    src/mos.cpp
     src/main.cpp  # Ensure included
 )
 

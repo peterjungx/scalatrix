@@ -2,10 +2,124 @@
 <html>
 <head>
     <title>Scalatrix Wasm Example</title>
-    <canvas id="canvas" width="1200" height="400"></canvas>
+    <script src="scalatrix.js"></script>
+    <script src="wasm_example.js"></script>  
+    <style>
+        .slider-container {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-flow: row;
+        }
+        .slider-col{
+            flex: 7;
+            display: flex;
+            flex-flow: column;
+        }
+        .slider-label {
+            flex: 1;
+            display: flex;
+            flex-flow: column;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+    </style>  
 </head>
 <body>
-    <script src="scalatrix.js"></script>
-    <script src="wasm_example.js"></script>
+    <div class="slider-container">
+        <div class="slider-col"><input type="range" min="0" max="1" step="0.001" value="0.585" id="range_g"></div><div class="slider-label"><span id="value_g">g: 0.585</span></div>
+    </div>
+    <div class="slider-container">
+        <div class="slider-col"><input type="range" min="0.1" max="2" step="0.001" value="1.0" id="range_s"></div><div class="slider-label"><span id="value_s">s: 1.0</span></div>
+    </div>
+    <div class="slider-container">
+        <div class="slider-col"><input type="range" min="-2" max="2" step="0.001" value="0.0" id="range_r"></div><div class="slider-label"><span id="value_r">r: 0.0</span></div>
+    </div>
+    <div class="slider-container">
+        <div class="slider-col"><input type="range" min="0.01" max="0.99" step="0.001" value="0.22" id="range_o"></div><div class="slider-label"><span id="value_o">o: 0.22</span></div>
+    </div>
+    <!--<div class="slider-container">
+        <div class="slider-col"><input type="range" min="0" max="23" step="1" value="1" id="range_d"></div><div class="slider-label"><span id="value_d">d: 1</span></div>
+    </div>-->
+    <div class="slider-container">
+        <div class="slider-col"><input type="range" min="1" max="24" step="0.01" value="7" id="range_n"></div><div class="slider-label"><span id="value_n">n: 7</span></div>
+    </div>
+    <div class="slider-container">
+        <div class="slider-label"><input type="checkbox" id="check_keep"></div><div class="slider-label"><span>keep structure</span></div>
+        <div class="slider-col"> </div>
+    </div>
+
+    <script>
+        const range_g = document.getElementById('range_g');
+        const value_g = document.getElementById('value_g');
+        
+        const range_s = document.getElementById('range_s');
+        const value_s = document.getElementById('value_s');
+
+        const range_r = document.getElementById('range_r');
+        const value_r = document.getElementById('value_r');
+        
+        const range_o = document.getElementById('range_o');
+        const value_o = document.getElementById('value_o');
+
+        //const range_d = document.getElementById('range_d');
+        //const value_d = document.getElementById('value_d');
+
+        const range_n = document.getElementById('range_n');
+        const value_n = document.getElementById('value_n');
+
+        const check_keep = document.getElementById('check_keep');
+
+        window.params = {
+            g: parseFloat(range_g.value),
+            s: parseFloat(range_s.value),
+            r: parseFloat(range_r.value),
+            o: parseFloat(range_o.value),
+            //d: parseFloat(range_d.value),
+            n: parseFloat(range_n.value),
+            keep: check_keep.checked
+        };
+        function handleSliderChange() {
+            window.drawScale(window.params);
+        }
+        range_g.addEventListener('input', (event) => {
+            value_g.textContent = `g: ${event.target.value}`;
+            window.params.g = parseFloat(event.target.value);
+            handleSliderChange();
+        });
+        range_s.addEventListener('input', (event) => {
+            value_s.textContent = `s: ${event.target.value}`;
+            window.params.s = parseFloat(event.target.value);
+            handleSliderChange();
+        });
+        range_r.addEventListener('input', (event) => {
+            value_r.textContent = `r: ${event.target.value}`;
+            window.params.r = parseFloat(event.target.value);
+            handleSliderChange();
+        });
+        range_o.addEventListener('input', (event) => {
+            value_o.textContent = `o: ${event.target.value}`;
+            window.params.o = parseFloat(event.target.value);
+            handleSliderChange();
+        });
+        //range_d.addEventListener('input', (event) => {
+        //    value_d.textContent = `d: ${event.target.value}`;
+        //    window.params.d = parseFloat(event.target.value);
+        //    handleSliderChange();
+        //});
+        range_n.addEventListener('input', (event) => {
+            value_n.textContent = `n: ${event.target.value}`;
+            window.params.n = parseFloat(event.target.value);
+            handleSliderChange();
+        });
+        check_keep.addEventListener('input', (event) => {
+            window.params.keep = event.target.checked;
+            handleSliderChange();
+        });
+
+
+    </script>
+    <canvas id="canvas" width="1200" height="400"></canvas>
 </body>
 </html>

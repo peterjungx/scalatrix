@@ -17,8 +17,10 @@ EMSCRIPTEN_BINDINGS(scalatrix) {
         .function("inverse", &AffineTransform::inverse);
 
     emscripten::class_<Scale>("Scale")
-        .constructor<double>()
+        .constructor<double, int>()
         .class_function("fromAffine", &Scale::fromAffine)
+        .function("recalcWithAffine", &Scale::recalcWithAffine)
+        .function("retuneWithAffine", &Scale::retuneWithAffine)
         .function("getNodes", &Scale::getNodes)
         .function("print", &Scale::print);
 
@@ -37,7 +39,7 @@ EMSCRIPTEN_BINDINGS(scalatrix) {
 
     emscripten::register_vector<Node>("VectorNode");
 
-    emscripten::function("find_affine_transform", &scalatrix::find_affine_transform);
+    emscripten::function("affineFromThreeDots", &scalatrix::affineFromThreeDots);
 }
 #endif
 

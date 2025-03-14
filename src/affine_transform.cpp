@@ -1,5 +1,4 @@
 #include "scalatrix/affine_transform.hpp"
-#include <Eigen/Dense>
 #include <cassert>
 
 
@@ -27,6 +26,28 @@ IntegerAffineTransform IntegerAffineTransform::inverse() const {
     return {d / det, -b / det, -c / det, a / det, (d * tx - b * ty) / det, (a * ty - c * tx) / det};
 }
 
+IntegerAffineTransform& IntegerAffineTransform::linearFromTwoDots(
+    const Vector2i& a1, const Vector2i& a2,
+    const Vector2i& b1, const Vector2i& b2) 
+{
+    // make sure a1 and a2 are not collinear
+    assert(a1.x * a2.y - a1.y * a2.x != 0);
+    // make sure b1 and b2 are not collinear
+    assert(b1.x * b2.y - b1.y * b2.x != 0);
+
+    static IntegerAffineTransform _self;
+    _self.tx=0;
+    _self.ty=0;
+    // find linear transform that maps a1 to b1 and a2 to b2
+    // find the linear transform that maps a1 to b1 and a2 to b2
+    int det = a1.x * a2.y - a1.y * a2.x;
+    _self.a = (b1.x * a2.y - b2.x * a1.y) / det;
+    _self.b = (a1.x * b2.x - b1.x * a2.x) / det;
+    _self.c = (b1.y * a2.y - a1.y * b2.y) / det;
+    _self.d = (a1.x * b2.y - a2.x * b1.y) / det;
+
+    return _self;
+}
 
 AffineTransform::AffineTransform(double a_, double b_, double c_, double d_, double tx_, double ty_)
     : a(a_), b(b_), c(c_), d(d_), tx(tx_), ty(ty_) {}
@@ -54,24 +75,7 @@ AffineTransform AffineTransform::inverse() const {
 }
 
 
-AffineTransform find_affine_transform(
-    const Vector2d& a1, const Vector2d& a2, const Vector2d& a3,
-    const Vector2d& b1, const Vector2d& b2, const Vector2d& b3) {
-    Eigen::Matrix<double, 6, 6> M;
-    M << a1.x, a1.y, 1, 0, 0, 0,
-         0, 0, 0, a1.x, a1.y, 1,
-         a2.x, a2.y, 1, 0, 0, 0,
-         0, 0, 0, a2.x, a2.y, 1,
-         a3.x, a3.y, 1, 0, 0, 0,
-         0, 0, 0, a3.x, a3.y, 1;
 
-    Eigen::Matrix<double, 6, 1> b;
-    b << b1.x, b1.y, b2.x, b2.y, b3.x, b3.y;
-
-    Eigen::Matrix<double, 6, 1> sol = M.colPivHouseholderQr().solve(b);
-
-    return AffineTransform(sol[0], sol[1], sol[3], sol[4], sol[2], sol[5]);
-}
 
 
 } // namespace scalatrix

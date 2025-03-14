@@ -11,11 +11,15 @@ struct MOSParams {
     double e, r;
 };
 
+
+AffineTransform affineFromThreeDots(
+    const Vector2d& a1, const Vector2d& a2, const Vector2d& a3,
+    const Vector2d& b1, const Vector2d& b2, const Vector2d& b3
+);
+
+
 AffineTransform affineFromMOSParams(int a, int b, int m, double e, double r);
 
-AffineTransform find_affine_transform(
-    const Vector2d& a1, const Vector2d& a2, const Vector2d& a3,
-    const Vector2d& b1, const Vector2d& b2, const Vector2d& b3);
 
 } // namespace scalatrix
 

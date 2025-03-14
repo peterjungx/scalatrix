@@ -39,7 +39,8 @@ std::pair<Vector2i, Vector2i> findClosestWithinStrip(const AffineTransform& M) {
             r = s;
         }
     }
-    else {
+    else 
+    {
         double e;
         bool x_large = std::abs(zv.x) > std::abs(zv.y);
         if (x_large){

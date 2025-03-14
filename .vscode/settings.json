@@ -78,6 +78,7 @@
         "charconv": "cpp",
         "forward_list": "cpp",
         "map": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "core": "cpp"
     }
 }
