@@ -13,8 +13,9 @@ struct Node {
     Vector2i natural_coord;  // Integer coords in scale's natural system
     Vector2d tuning_coord;   // Floating-point coords in tuning system
     double pitch;
-    PitchSetPitch* temperedPitch;
-    Node() noexcept : natural_coord(), tuning_coord(), pitch(0.0), temperedPitch(nullptr) {}
+    bool isTempered;
+    PitchSetPitch temperedPitch;
+    Node() noexcept : natural_coord(), tuning_coord(), pitch(0.0), isTempered(false), temperedPitch() {}
     bool operator<(const Node& other) const noexcept;
     // assignment operator
     Node& operator=(const Node& other) {

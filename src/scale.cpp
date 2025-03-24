@@ -95,7 +95,7 @@ void Scale::retuneWithAffine(const AffineTransform& A) {
         Node& node = nodes_[n];
         node.tuning_coord = A * node.natural_coord;
         node.pitch = base_freq_ * std::exp2(node.tuning_coord.x);
-        node.temperedPitch = nullptr;
+        node.isTempered = false;
     }
 }
 
@@ -114,8 +114,8 @@ void Scale::print(int first, int num) const {
             std::cout.precision(5);     
             std::cout << node.pitch << " Hz";
 
-            if (node.temperedPitch != nullptr) {
-                std::cout << " (" << node.temperedPitch->label << ")";
+            if (node.isTempered) {
+                std::cout << " (" << node.temperedPitch.label << ")";
             }
             std::cout << "\n";
 
@@ -129,17 +129,18 @@ void Scale::temperToPitchSet(PitchSet& pitchset){
         double node_pitch_log2fr = log2(node.pitch/base_freq_);
         double closest_pitch_log2fr = 0.0;
         double min_dist = 1e6;
-        PitchSetPitch* closest_pitch;
+        PitchSetPitch closest_pitch;
         for (auto& pitch : pitchset) {
             double dist = std::abs(pitch.log2fr - node_pitch_log2fr);
             if (dist < min_dist) {
                 min_dist = dist;
                 closest_pitch_log2fr = pitch.log2fr;
-                closest_pitch = &pitch;
+                closest_pitch = pitch;
             }
         }
         node.tuning_coord.x = closest_pitch_log2fr;
         node.pitch = base_freq_ * exp2(closest_pitch_log2fr);
+        node.isTempered = true;
         node.temperedPitch = closest_pitch;
     }
 };

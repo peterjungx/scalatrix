@@ -67,10 +67,25 @@ Vector2i applyPath(const std::vector<bool> path, const Vector2i& v) {
         } else {
             a += b;
         }
-        std::cout << " " << a << " " << b << "\n";
     }
     return {a,b};
 }
+
+Vector2i applyPathReverse(const std::vector<bool> path, const Vector2i& v) {
+    int a = v.x;
+    int b = v.y;
+    std::vector<bool> reversed_path = path;
+    std::reverse(reversed_path.begin(), reversed_path.end());
+    for (bool p : reversed_path) {
+        if (p) {
+            b -= a;
+        } else {
+            a -= b;
+        }
+    }
+    return {a,b};
+}
+
 
 MOS& MOS::fromParams(int a, int b, int m, double e, double g){
     static MOS _self;
@@ -295,6 +310,7 @@ Scale MOS::generateScaleFromMOS(double base_freq, int n_nodes, int root){
         node.tuning_coord = this->impliedAffine * node.natural_coord;
         node.tuning_coord.x = ref.tuning_coord.x + octave_nr * this->equave;
         node.pitch = base_freq * exp2(node.tuning_coord.x);
+        node.isTempered = ref.isTempered;
         node.temperedPitch = ref.temperedPitch;
     }
     return scale;
@@ -310,10 +326,17 @@ void MOS::retuneScaleWithMOS(Scale& scale, double base_freq){
         Node& node = scale.getNodes()[i];
         node.tuning_coord.x = ref.tuning_coord.x + octave_nr * this->equave;
         node.pitch = base_freq * std::exp2(node.tuning_coord.x);
+        node.isTempered = ref.isTempered;
         node.temperedPitch = ref.temperedPitch;
     }
 };
 
+
+Vector2i MOS::mapFromMOS(MOS& other, Vector2i v){
+    Vector2i result = applyPathReverse(other.path, v);
+    result = applyPath(path, result);
+    return result;
+}
 
 } // namespace scalatrix
 

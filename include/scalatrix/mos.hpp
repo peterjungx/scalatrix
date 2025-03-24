@@ -55,6 +55,8 @@ public:
     Scale generateScaleFromMOS(double base_freq, int n, int root);
     void retuneScaleWithMOS(Scale& scale, double base_freq);
 
+    Vector2i mapFromMOS(MOS& other, Vector2i v);
+
 };
 
 } // namespace scalatrix

@@ -20,7 +20,10 @@ PYBIND11_MODULE(scalatrix, m) {
         .def(py::init<>())
         .def_readwrite("natural_coord", &Node::natural_coord)
         .def_readwrite("tuning_coord", &Node::tuning_coord)
-        .def_readwrite("pitch", &Node::pitch);
+        .def_readwrite("pitch", &Node::pitch)
+        .def_readwrite("isTempered", &Node::isTempered)
+        .def_readwrite("temperedPitch", &Node::temperedPitch);
+
 
     py::class_<AffineTransform>(m, "AffineTransform")
         .def(py::init<double, double, double, double, double, double>())
@@ -46,7 +49,31 @@ PYBIND11_MODULE(scalatrix, m) {
 
     py::class_<MOS>(m, "MOS")
         .def(py::init<int, int, int, double, double>())
-        .def("fromG", &MOS::fromG)
+        .def_readwrite("L_vec", &MOS::L_vec)
+        .def_readwrite("s_vec", &MOS::s_vec)
+        .def_readwrite("chroma_vec", &MOS::chroma_vec)
+        .def_readwrite("L_fr", &MOS::L_fr)
+        .def_readwrite("s_fr", &MOS::s_fr)
+        .def_readwrite("chroma_fr", &MOS::chroma_fr)
+        .def_readwrite("a", &MOS::a)
+        .def_readwrite("b", &MOS::b)
+        .def_readwrite("n", &MOS::n)
+        .def_readwrite("a0", &MOS::a0)
+        .def_readwrite("b0", &MOS::b0)
+        .def_readwrite("n0", &MOS::n0)
+        .def_readwrite("mode", &MOS::mode)
+        .def_readwrite("repetitions", &MOS::repetitions)
+        .def_readwrite("depth", &MOS::depth)
+        .def_readwrite("equave", &MOS::equave)
+        .def_readwrite("period", &MOS::period)
+        .def_readwrite("generator", &MOS::generator)
+        .def_readwrite("path", &MOS::path)
+        .def_readwrite("impliedAffine", &MOS::impliedAffine)
+        .def_readwrite("mosTransform", &MOS::mosTransform)
+        .def_readwrite("v_gen", &MOS::v_gen)
+        .def_readwrite("base_scale", &MOS::base_scale)
+        .def_static("fromParams", &MOS::fromParams)
+        .def_static("fromG", &MOS::fromG)
         .def("adjustParams", &MOS::adjustParams)
         .def("angle", &MOS::angle)
         .def("angleStd", &MOS::angleStd)
@@ -61,7 +88,8 @@ PYBIND11_MODULE(scalatrix, m) {
         .def("retuneTwoPoints", &MOS::retuneTwoPoints)
         .def("retuneThreePoints", &MOS::retuneThreePoints)
         .def("generateScaleFromMOS", &MOS::generateScaleFromMOS)
-        .def("retuneScaleWithMOS", &MOS::retuneScaleWithMOS);
+        .def("retuneScaleWithMOS", &MOS::retuneScaleWithMOS)
+        .def("mapFromMOS", &MOS::mapFromMOS);
 
     // pitchset.hpp
 
@@ -72,9 +100,9 @@ PYBIND11_MODULE(scalatrix, m) {
     
     py::class_<PitchSet>(m, "PitchSet")
         .def(py::init<>())
-        .def("generateETPitchSet", &generateETPitchSet)
-        .def("generateJIPitchSet", &generateJIPitchSet)
-        .def("generateHarmonicSeriesPitchSet", &generateHarmonicSeriesPitchSet);
+        .def_static("generateETPitchSet", &generateETPitchSet)
+        .def_static("generateJIPitchSet", &generateJIPitchSet)
+        .def_static("generateHarmonicSeriesPitchSet", &generateHarmonicSeriesPitchSet);
     
     py::class_<PseudoPrimeInt>(m, "PseudoPrimeInt")
         .def(py::init<>())
@@ -84,8 +112,8 @@ PYBIND11_MODULE(scalatrix, m) {
     
     py::class_<PrimeList>(m, "PrimeList")
         .def(py::init<>())
-        .def("generateDefaultPrimeList", &generateDefaultPrimeList)
-        .def("pseudoPrimeFromIndexNumber", &pseudoPrimeFromIndexNumber);
+        .def_static("generateDefaultPrimeList", &generateDefaultPrimeList)
+        .def_static("pseudoPrimeFromIndexNumber", &pseudoPrimeFromIndexNumber);
 
 
 
