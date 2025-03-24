@@ -10,7 +10,7 @@ bool Node::operator<(const Node& other) const noexcept {
     return false;
 }
 
-Scale::Scale(double base_freq, int N) : base_freq_(base_freq) {
+Scale::Scale(double base_freq, int N, int root_node_idx) : base_freq_(base_freq), root_idx_(root_node_idx) {
     initNodes(N);
 }
 
@@ -23,17 +23,18 @@ void Scale::initNodes(int N){
 }
 
 /*static*/ 
-Scale& Scale::fromAffine(const AffineTransform& A, const double base_freq, int N, int n_root) {
+Scale& Scale::fromAffine(const AffineTransform& A, const double base_freq, int N, int root_node_idx) {
 
     static Scale _self;
     _self.initNodes(N);
     _self.base_freq_ = base_freq;
+    _self.root_idx_ = root_node_idx;
 
-    _self.recalcWithAffine(A, N, n_root);
+    _self.recalcWithAffine(A, N, root_node_idx);
     return _self;
 }
 
-void Scale::recalcWithAffine(const AffineTransform& A, int N, int n_root) {
+void Scale::recalcWithAffine(const AffineTransform& A, int N, int root_node_idx) {
     
     AffineTransform M = AffineTransform(A);
     M.tx = 0;
@@ -46,7 +47,7 @@ void Scale::recalcWithAffine(const AffineTransform& A, int N, int n_root) {
     //printf("r = (%d, %d) -> (%f, %f)\n", r.x, r.y, zr.x, zr.y);
     //printf("s = (%d, %d) -> (%f, %f)\n", s.x, s.y, zs.x, zs.y);
 
-    int n_min = -n_root, n_max = N - n_root;
+    int n_min = -root_node_idx, n_max = N - root_node_idx;
 
     // generate the nodes within the strip using the 3-gap theorem
     Node root;
@@ -54,7 +55,7 @@ void Scale::recalcWithAffine(const AffineTransform& A, int N, int n_root) {
     root.tuning_coord = A * root.natural_coord;
     root.pitch = base_freq_;
 
-    nodes_[n_root] = root;
+    nodes_[root_node_idx] = root;
 
     Node last = root;
 
@@ -69,7 +70,7 @@ void Scale::recalcWithAffine(const AffineTransform& A, int N, int n_root) {
         }
         last.tuning_coord = A * last.natural_coord;
         last.pitch = base_freq_ * std::exp2(last.tuning_coord.x);
-        nodes_[n_root + n] = last;
+        nodes_[root_node_idx + n] = last;
     }
     //std::cout << "Length of right: " << right.size() << "\n";
 
@@ -85,7 +86,7 @@ void Scale::recalcWithAffine(const AffineTransform& A, int N, int n_root) {
         }
         last.tuning_coord = A * last.natural_coord;
         last.pitch = base_freq_ * std::exp2(last.tuning_coord.x);
-        nodes_[n_root + n] = last;
+        nodes_[root_node_idx + n] = last;
     }
 }
 
@@ -94,6 +95,7 @@ void Scale::retuneWithAffine(const AffineTransform& A) {
         Node& node = nodes_[n];
         node.tuning_coord = A * node.natural_coord;
         node.pitch = base_freq_ * std::exp2(node.tuning_coord.x);
+        node.temperedPitch = nullptr;
     }
 }
 
@@ -110,13 +112,40 @@ void Scale::print(int first, int num) const {
                       << node.tuning_coord.x << ", " << node.tuning_coord.y << ") ";
 
             std::cout.precision(5);     
-            std::cout << node.pitch << " Hz\n";
+            std::cout << node.pitch << " Hz";
+
+            if (node.temperedPitch != nullptr) {
+                std::cout << " (" << node.temperedPitch->label << ")";
+            }
+            std::cout << "\n";
 
         }
     }
 }
 
-const std::vector<Node>& Scale::getNodes() const {
+void Scale::temperToPitchSet(PitchSet& pitchset){
+    // find the closest pitch in pitchset to each node in base_scale
+    for (auto& node : nodes_) {
+        double node_pitch_log2fr = log2(node.pitch/base_freq_);
+        double closest_pitch_log2fr = 0.0;
+        double min_dist = 1e6;
+        PitchSetPitch* closest_pitch;
+        for (auto& pitch : pitchset) {
+            double dist = std::abs(pitch.log2fr - node_pitch_log2fr);
+            if (dist < min_dist) {
+                min_dist = dist;
+                closest_pitch_log2fr = pitch.log2fr;
+                closest_pitch = &pitch;
+            }
+        }
+        node.tuning_coord.x = closest_pitch_log2fr;
+        node.pitch = base_freq_ * exp2(closest_pitch_log2fr);
+        node.temperedPitch = closest_pitch;
+    }
+};
+
+
+std::vector<Node>& Scale::getNodes() {
     return nodes_;
 }
 

@@ -13,6 +13,8 @@ struct Vector2i {
     void operator-=(const Vector2i& v) { x -= v.x; y -= v.y; }
     Vector2i operator+(const Vector2i& v) { return {x + v.x, y + v.y}; }
     Vector2i operator-(const Vector2i& v) { return {x - v.x, y - v.y}; }
+    Vector2i operator*(const int s) { return {x * s, y * s}; }
+
 };
 
 class IntegerAffineTransform {
@@ -36,6 +38,7 @@ public:
 struct Vector2d {
     double x, y;
     Vector2d(double x_ = 0.0, double y_ = 0.0) noexcept : x(x_), y(y_) {}
+    Vector2d(Vector2i v) noexcept : x(v.x), y(v.y) {}
     Vector2d operator-(){ return {-x, -y}; }
     void operator+=(const Vector2d& v) { x += v.x; y += v.y; }
     void operator-=(const Vector2d& v) { x -= v.x; y -= v.y; }
@@ -53,6 +56,7 @@ public:
     AffineTransform operator*(double s) const;
     Vector2d operator*(const Vector2d& v) const;
     Vector2d operator*(const Vector2i& v) const;
+    AffineTransform operator*(const AffineTransform& M) const;
     AffineTransform inverse() const;
     Vector2d apply(const Vector2d& v) const;
     Vector2d apply(const Vector2i& v) const;

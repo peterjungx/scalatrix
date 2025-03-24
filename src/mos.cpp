@@ -238,5 +238,83 @@ std::string MOS::nodeLabelLetterWithOctaveNumber(Vector2i v, int middle_C_octave
 };
 
 
+
+void MOS::_recalcOnRetuneUsingAffine(AffineTransform& A){
+    this->base_scale.retuneWithAffine(A);
+    this->impliedAffine = A;
+    this->equave = A.apply(Vector2i(a,b)).x - A.apply(Vector2i(0,0)).x;
+    this->period = A.apply(Vector2i(a0,b0)).x - A.apply(Vector2i(0,0)).x;
+    this->generator = (A.apply(this->v_gen).x - A.apply(Vector2i(0,0)).x) / this->period;
+    this->updateVectors();
+};
+
+void MOS::retuneZeroPoint(){
+    // use to undo tempering
+    _recalcOnRetuneUsingAffine(this->impliedAffine);
 }
+void MOS::retuneOnePoint(Vector2i v, double log2fr){
+    // shift frequencies so v matches log2fr
+    double shift = log2fr - (this->impliedAffine * v).x;
+    AffineTransform A = this->impliedAffine;
+    A.tx += shift;
+    _recalcOnRetuneUsingAffine(A);
+};
+void MOS::retuneTwoPoints(Vector2i fixed, Vector2i v, double log2fr){
+    // rescale frequencies so fixed matches its original frequency and v matches log2fr
+    AffineTransform A = this->impliedAffine;
+    AffineTransform B = AffineTransform();
+    double fixed_log2fr = (A * fixed).x;
+    double scale = (log2fr - fixed_log2fr)/((A * v).x - fixed_log2fr);
+    B.a = scale;
+    A = B * A;
+    double shift = fixed_log2fr - (A * fixed).x;
+    A.tx = shift;
+    _recalcOnRetuneUsingAffine(A);
+};
+void MOS::retuneThreePoints(Vector2i fixed1, Vector2i fixed2, Vector2i v, double log2fr){
+    // rescale frequencies so fixed1 and fixed2 match original frequencies, and v matches log2fr
+    Vector2d fixed1_tuning = this->impliedAffine * fixed1;
+    Vector2d fixed2_tuning = this->impliedAffine * fixed2;
+    Vector2d v_tuning = this->impliedAffine * v;
+    v_tuning.x = log2fr;
+    AffineTransform A = affineFromThreeDots(
+        Vector2d(fixed1), Vector2d(fixed2), Vector2d(v),
+        fixed1_tuning, fixed2_tuning, v_tuning
+    );
+    _recalcOnRetuneUsingAffine(A);
+};
+
+
+Scale MOS::generateScaleFromMOS(double base_freq, int n_nodes, int root){
+    Scale scale = Scale(base_freq, n_nodes, root);
+    for (int i=-root; i<n_nodes-root; i++){
+        int idx = (i +  128*n) % n;
+        int octave_nr = (i + 128*n) / n - 128;
+        Node& ref = this->base_scale.getNodes()[idx];
+        Node& node = scale.getNodes()[i+root];
+        node.natural_coord = (Vector2i(a,b) * octave_nr) + ref.natural_coord;
+        node.tuning_coord = this->impliedAffine * node.natural_coord;
+        node.tuning_coord.x = ref.tuning_coord.x + octave_nr * this->equave;
+        node.pitch = base_freq * exp2(node.tuning_coord.x);
+        node.temperedPitch = ref.temperedPitch;
+    }
+    return scale;
+};
+
+void MOS::retuneScaleWithMOS(Scale& scale, double base_freq){
+    //int n_nodes = scale.getNodes().size();
+    int root_idx = scale.getRootIdx();
+    for (int i = 0; i < scale.getNodes().size(); i++) {
+        int idx = (i - root_idx + 128*n) % n;
+        int octave_nr = (i - root_idx + 128*n) / n - 128;
+        Node& ref = this->base_scale.getNodes()[idx];
+        Node& node = scale.getNodes()[i];
+        node.tuning_coord.x = ref.tuning_coord.x + octave_nr * this->equave;
+        node.pitch = base_freq * std::exp2(node.tuning_coord.x);
+        node.temperedPitch = ref.temperedPitch;
+    }
+};
+
+
+} // namespace scalatrix
 

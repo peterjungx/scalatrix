@@ -19,7 +19,7 @@ int main() {
 
     // Test MOS scale creation
 
-    MOS mos = MOS::fromG(3, 4, 0.585, 2.0, 2);
+    MOS mos = MOS::fromG(3, 4, 0.585, 1.0, 1);
     // print the params
     std::cout << "MOS params: a=" << mos.a << ", b=" << mos.b << ", n=" << mos.n << ", a0=" << mos.a0 << ", b0=" << mos.b0 << ", n0=" << mos.n0 << ", mode=" << mos.mode << ", repetitions=" << mos.repetitions << ", depth=" << mos.depth << ", equave=" << mos.equave << ", period=" << mos.period << ", generator=" << mos.generator << "\n";
     // print angleStd
@@ -126,6 +126,57 @@ int main() {
     std::cout << "\n";
 
 
+
+    auto s = mos.generateScaleFromMOS(261.63, 128, 60);
+    
+    std::cout << "Generated scale with " << s.getNodes().size() << " nodes:\n";
+    s.print(58, 12);
+
+    std::cout << "One point retuned scale:\n";
+    mos.retuneOnePoint({0, 0}, 1.0);
+    mos.retuneScaleWithMOS(s, 261.63);
+    s.print(58, 12);
+
+    std::cout << "One point retuned scale:\n";
+    mos.retuneOnePoint({mos.a, mos.b}, 1.0);
+    mos.retuneScaleWithMOS(s, 261.63);
+    s.print(58, 12);
+
+    std::cout << "Two points retuned scale:\n";
+    mos.retuneTwoPoints({0, 0}, {mos.a, mos.b}, 1.1);
+    mos.retuneScaleWithMOS(s, 261.63);
+    s.print(58, 12);
+    
+    std::cout << "Three points retuned scale:\n";
+    mos.retuneThreePoints({0, 0}, {mos.a, mos.b}, mos.v_gen, 7.0/12);
+    mos.retuneScaleWithMOS(s, 261.63);
+    s.print(58, 12);
+
+    std:: cout << "Tempered scale with JI pitch set:\n";
+    mos.retuneZeroPoint();
+    mos.base_scale.temperToPitchSet(jiPitchSet);
+    mos.retuneScaleWithMOS(s, 261.63);
+    s.print(58, 12);
+
+    std::cout << "Zero point retuned scale:\n";
+    mos.retuneZeroPoint();
+    mos.retuneScaleWithMOS(s, 261.63);
+    s.print(58, 12);
+
+
+    std::cout << "Tempered with ET pitch set:\n";
+    mos.base_scale.temperToPitchSet(etPitchSet);
+    mos.retuneScaleWithMOS(s, 261.63);
+    s.print(58, 12);
+    
+    std::cout << "Tempered with harmonic series pitch set:\n";
+    mos.base_scale.temperToPitchSet(hsPitchSet);
+    mos.retuneScaleWithMOS(s, 261.63);
+    s.print(58, 12);
+
+    std::cout << "Temper the full scale:\n";
+    s.temperToPitchSet(jiPitchSet);
+    s.print(58, 12);
 
     return 0;
 }

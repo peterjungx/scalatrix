@@ -3,6 +3,7 @@
 
 #include "scalatrix/affine_transform.hpp"
 #include "scalatrix/scale.hpp"
+#include "scalatrix/pitchset.hpp"
 
 namespace scalatrix {
 
@@ -43,6 +44,17 @@ public:
     std::string nodeLabelDigit(Vector2i v) const;
     std::string nodeLabelLetter(Vector2i v) const;
     std::string nodeLabelLetterWithOctaveNumber(Vector2i v, int middle_C_octave=4) const;
+
+    void _recalcOnRetuneUsingAffine(AffineTransform& A);
+
+    void retuneZeroPoint();
+    void retuneOnePoint(Vector2i v, double log2fr);
+    void retuneTwoPoints(Vector2i fixed, Vector2i v, double log2fr);
+    void retuneThreePoints(Vector2i fixed1, Vector2i fixed2, Vector2i v, double log2fr);
+
+    Scale generateScaleFromMOS(double base_freq, int n, int root);
+    void retuneScaleWithMOS(Scale& scale, double base_freq);
+
 };
 
 } // namespace scalatrix
