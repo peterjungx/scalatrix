@@ -30,3 +30,6 @@ Makefile
 
 # Pyenv 
 .python-version
+
+# remove example executable
+examples/native/native_example
