@@ -19,7 +19,7 @@ int main() {
 
     // Test MOS scale creation
 
-    MOS mos = MOS::fromG(3, 0, 0.585, 1.0, 1);
+    MOS mos = MOS::fromG(3, 4, 0.585, 2.0, 2);
     // print the params
     std::cout << "MOS params: a=" << mos.a << ", b=" << mos.b << ", n=" << mos.n << ", a0=" << mos.a0 << ", b0=" << mos.b0 << ", n0=" << mos.n0 << ", mode=" << mos.mode << ", repetitions=" << mos.repetitions << ", depth=" << mos.depth << ", equave=" << mos.equave << ", period=" << mos.period << ", generator=" << mos.generator << "\n";
     // print angleStd
@@ -55,6 +55,21 @@ int main() {
 
     // print gFromAngle
     std::cout << "gFromAngle: " << mos.gFromAngle(mos.angle()) << "\n";
+
+    // L, s, chroma vectors and frequencies
+    std::cout << "L_vec: x=" << mos.L_vec.x << ", y=" << mos.L_vec.y << " -- L_fr: " << 1200*mos.L_fr << "\n";
+    std::cout << "s_vec: x=" << mos.s_vec.x << ", y=" << mos.s_vec.y << " -- s_fr: " << 1200*mos.s_fr << "\n";
+    std::cout << "chroma_vec: x=" << mos.chroma_vec.x << ", y=" << mos.chroma_vec.y << " -- chroma_fr: " << 1200*mos.chroma_fr << "\n";
+
+    // print nodeLabelDigit for each in base_scale
+    for (auto node : mos.base_scale.getNodes()) {
+        std::cout << mos.nodeLabelLetterWithOctaveNumber(node.natural_coord) << " ";
+    }
+    std::cout << "\n";
+
+    std::cout << mos.nodeLabelLetterWithOctaveNumber({0,-1}) << " ";
+
+
     return 0;
 }
 

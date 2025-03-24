@@ -14,6 +14,10 @@ public:
     double equave; // log2(frequency ratio) of equave (interval of equivalence)
     double period; // log2(frequency ratio) of MOS period
     double generator; 
+
+    Vector2i L_vec, s_vec, chroma_vec;
+    double L_fr, s_fr, chroma_fr;
+
     std::vector<bool> path;
     AffineTransform impliedAffine;
     IntegerAffineTransform mosTransform;
@@ -31,13 +35,14 @@ public:
     double angleStd() const;
 
     AffineTransform calcImpliedAffine() const;
+    void updateVectors();
 
     double gFromAngle(double angle);
 
-    std::string accidentalString(Vector2i v) const;
+    std::string accidentalString(Vector2i v, bool swap=false) const;
     std::string nodeLabelDigit(Vector2i v) const;
     std::string nodeLabelLetter(Vector2i v) const;
-    std::string nodeLabelLetterWithOctaveNumber(Vector2i v) const;
+    std::string nodeLabelLetterWithOctaveNumber(Vector2i v, int middle_C_octave=4) const;
 };
 
 } // namespace scalatrix

@@ -78,6 +78,26 @@ MOS& MOS::fromParams(int a, int b, int m, double e, double g){
     return _self;
 }
 
+void MOS::updateVectors(){
+    Vector2i v1 = {1, 0};
+    Vector2i v2 = {0, 1};
+    double v1_fr = this->impliedAffine.apply(v1).x;
+    double v2_fr = this->impliedAffine.apply(v2).x;
+    if (v1_fr > v2_fr) {
+        this->L_vec = v1;
+        this->s_vec = v2;
+        this->L_fr = v1_fr;
+        this->s_fr = v2_fr;
+    } else {
+        this->L_vec = v2;
+        this->s_vec = v1;
+        this->L_fr = v2_fr;
+        this->s_fr = v1_fr;
+    }
+    this->chroma_vec = this->L_vec - this->s_vec;
+    this->chroma_fr = this->L_fr - this->s_fr;
+}
+
 void MOS::adjustParams(int a, int b, int m, double e, double g){
     assert(a > 0);
     assert(b > 0);
@@ -107,8 +127,10 @@ void MOS::adjustParams(int a, int b, int m, double e, double g){
     this->v_gen = applyPath(this->path, {1, 0});
     this->impliedAffine = calcImpliedAffine();
 
+    this->updateVectors();
 
     this->base_scale = Scale::fromAffine(this->impliedAffine, 1.0, n+1, 0);
+
 
     this->mosTransform = IntegerAffineTransform::linearFromTwoDots(
         {1, 0}, {1, 1},
@@ -175,17 +197,21 @@ AffineTransform MOS::calcImpliedAffine() const {
     );
 };
 
-std::string MOS::accidentalString(Vector2i v) const{
-    int acc = (v.x * b0 - v.y * a0) / n0;
+std::string MOS::accidentalString(Vector2i v, bool swap) const{
+    
+    int acc = floor( ((swap?-1:1)* (v.y * a0 - v.x * b0) - 2.0) / n0 + 1);
+    if (L_vec.x == 1){
+        acc *= -1;
+    }
     std::string result = "";
     if (acc != 0) {
         while (acc < 0) {
             acc += 1;
-            result += "b";
+            result += "♭";
         }
         while (acc > 0) {
             acc -= 1;
-            result += "#";
+            result += "♯";
         }
     }
     return result;
@@ -193,20 +219,21 @@ std::string MOS::accidentalString(Vector2i v) const{
 
 std::string MOS::nodeLabelDigit(Vector2i v) const{
     int dia = (v.x + v.y + 128*n) % n;
-    std::string result = std::to_string(dia);
+    std::string result = std::to_string(dia+1);
     result += accidentalString(v);
     return result;
 };
 std::string MOS::nodeLabelLetter(Vector2i v) const{
-    int dia = (v.x + v.y + 128*n) % n;
-    std::string result = std::to_string(dia);
+    int dia = (v.x + v.y + 2 + 128*n) % n;
+    char letter = 'A' + dia;
+    std::string result(1, letter);
     result += accidentalString(v);
     return result;
 };
-std::string MOS::nodeLabelLetterWithOctaveNumber(Vector2i v) const{
-    int dia = (v.x + v.y + 128*n) % n;
-    std::string result = std::to_string(dia);
-    result += accidentalString(v);
+std::string MOS::nodeLabelLetterWithOctaveNumber(Vector2i v, int middle_C_octave) const{
+    std::string result = nodeLabelLetter(v);
+    int octave = middle_C_octave + floor((.0 + v.x + v.y) / n);
+    result += std::to_string(octave);
     return result;
 };
 
