@@ -34,6 +34,10 @@ public:
 
     double gFromAngle(double angle);
 
+    std::string accidentalString(Vector2i v) const;
+    std::string nodeLabelDigit(Vector2i v) const;
+    std::string nodeLabelLetter(Vector2i v) const;
+    std::string nodeLabelLetterWithOctaveNumber(Vector2i v) const;
 };
 
 } // namespace scalatrix

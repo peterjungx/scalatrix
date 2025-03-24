@@ -24,6 +24,30 @@ EMSCRIPTEN_BINDINGS(scalatrix) {
         .function("getNodes", &Scale::getNodes)
         .function("print", &Scale::print);
 
+
+    emscripten::class_<MOS>("MOS")
+        .class_function("fromG", &MOS::fromG)
+        .function("angle", &MOS::angle)
+        .function("angleStd", &MOS::angleStd)
+        .function("gFromAngle", &MOS::gFromAngle)
+        .property("a", &MOS::a)
+        .property("b", &MOS::b)
+        .property("n", &MOS::n)
+        .property("a0", &MOS::a0)
+        .property("b0", &MOS::b0)
+        .property("n0", &MOS::n0)
+        .property("mode", &MOS::mode)
+        .property("repetitions", &MOS::repetitions)
+        .property("depth", &MOS::depth)
+        .property("equave", &MOS::equave)
+        .property("period", &MOS::period)
+        .property("generator", &MOS::generator)
+        .property("path", &MOS::path)
+        .property("impliedAffine", &MOS::impliedAffine)
+        .property("mosTransform", &MOS::mosTransform)
+        .property("v_gen", &MOS::v_gen)
+        .property("base_scale", &MOS::base_scale);
+
     emscripten::value_object<Vector2d>("Vector2d")
         .field("x", &Vector2d::x)
         .field("y", &Vector2d::y);

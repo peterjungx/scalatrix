@@ -11,7 +11,6 @@
 namespace scalatrix {
 
 
-
 int gcd(int a, int b) {
     if (b == 0) return a;
     return gcd(b, a % b);
@@ -174,6 +173,41 @@ AffineTransform MOS::calcImpliedAffine() const {
         {0,0}, {(double)v_gen.x, (double)v_gen.y}, {(double)a0,(double)b0},
         {0,q*(2*mode+1)}, {generator * period, q*(2*mode+3)}, {period, q*(2*mode+1)}
     );
+};
+
+std::string MOS::accidentalString(Vector2i v) const{
+    int acc = (v.x * b0 - v.y * a0) / n0;
+    std::string result = "";
+    if (acc != 0) {
+        while (acc < 0) {
+            acc += 1;
+            result += "b";
+        }
+        while (acc > 0) {
+            acc -= 1;
+            result += "#";
+        }
+    }
+    return result;
+}
+
+std::string MOS::nodeLabelDigit(Vector2i v) const{
+    int dia = (v.x + v.y + 128*n) % n;
+    std::string result = std::to_string(dia);
+    result += accidentalString(v);
+    return result;
+};
+std::string MOS::nodeLabelLetter(Vector2i v) const{
+    int dia = (v.x + v.y + 128*n) % n;
+    std::string result = std::to_string(dia);
+    result += accidentalString(v);
+    return result;
+};
+std::string MOS::nodeLabelLetterWithOctaveNumber(Vector2i v) const{
+    int dia = (v.x + v.y + 128*n) % n;
+    std::string result = std::to_string(dia);
+    result += accidentalString(v);
+    return result;
 };
 
 
