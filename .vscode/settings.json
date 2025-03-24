@@ -79,6 +79,10 @@
         "forward_list": "cpp",
         "map": "cpp",
         "set": "cpp",
-        "core": "cpp"
+        "core": "cpp",
+        "list": "cpp",
+        "typeindex": "cpp",
+        "unordered_set": "cpp",
+        "valarray": "cpp"
     }
 }

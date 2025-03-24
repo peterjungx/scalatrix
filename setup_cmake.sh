@@ -24,6 +24,13 @@ cd build/wasm
 emcmake cmake ../.. -DCMAKE_TOOLCHAIN_FILE="$EMSDK_PATH/libexec/cmake/Modules/Platform/Emscripten.cmake"
 cd ../..
 
+# Setup Python build
+echo "Configuring Python build..."
+mkdir -p build/python
+cd build/python
+cmake ../.. -DPython3_EXECUTABLE=$(which python3)
+cd ../..
+
 # Setup root-level Makefile for custom targets
 echo "Configuring root-level Makefile..."
 cmake .  # Generates Makefile in scalatrix/ with native as default

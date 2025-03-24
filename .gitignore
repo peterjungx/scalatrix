@@ -1,6 +1,7 @@
 # Build directories
 build/native/
 build/wasm/
+build/python/
 
 # CMake artifacts
 CMakeCache.txt
@@ -26,3 +27,6 @@ Makefile
 *.sublime-project
 *.sublime-workspace
 .DS_Store
+
+# Pyenv 
+.python-version
