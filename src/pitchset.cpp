@@ -43,10 +43,11 @@ PitchSet generateJIPitchSet(PrimeList primes, int max_numtimesden, double min_lo
     // generate all numbers with prime factors in primes up to max_numtimesden
     for (int i = 1; i < max_numtimesden; i++) {
         int r = i;
+        double log2fr = 0.0;
         for (auto p : primes) {
             while (r % p.number == 0) {
                 r /= p.number;
-                
+                log2fr += p.log2fr;
             }
         }
         bool include = r == 1;
@@ -54,7 +55,7 @@ PitchSet generateJIPitchSet(PrimeList primes, int max_numtimesden, double min_lo
             PseudoPrimeInt p;
             p.label = std::to_string(i);
             p.number = i;
-            p.log2fr = log2(i);
+            p.log2fr = log2fr;
             nums.push_back(p);
         }
     }
@@ -105,6 +106,11 @@ PitchSet generateHarmonicSeriesPitchSet(PrimeList primes, int base, double max_l
         pitch.log2fr += log2(r);
         pitchset.push_back(pitch);
     }
+    std::sort(pitchset.begin(), pitchset.end(), 
+        [](PitchSetPitch a, PitchSetPitch b) {
+            return a.log2fr < b.log2fr;
+        }
+    );
     return pitchset;
 };
 

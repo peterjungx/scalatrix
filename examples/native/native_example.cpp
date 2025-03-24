@@ -83,9 +83,11 @@ int main() {
     primes.erase(primes.begin() + 2);
     std::cout << "Prime List: ";
     for (auto prime : primes) {
-        std::cout << prime.label << " ";
+        std::cout << prime.label << " " << prime.number << " " << prime.log2fr << " ";
     }
     std::cout << "\n";
+
+
 
     auto jiPitchSet = generateJIPitchSet(primes, 240);
     std::cout << "JI Pitch Set: ";
@@ -94,7 +96,29 @@ int main() {
     }
     std::cout << "\n";
 
-    auto hsPitchSet = generateHarmonicSeriesPitchSet(generateDefaultPrimeList(3), 17, 1.001);
+    auto hsPitchSet = generateHarmonicSeriesPitchSet(primes, 17, 1.001);
+    std::cout << "Harmonic Series Pitch Set: ";
+    for (auto pitch : hsPitchSet) {
+        std::cout << pitch.label << "(" << pitch.log2fr << ") ";
+    }
+    std::cout << "\n";
+
+    primes[0].log2fr *= 1.01;
+
+    std::cout << "Prime List: ";
+    for (auto prime : primes) {
+        std::cout << prime.label << " " << prime.number << " " << prime.log2fr << " ";
+    }
+    std::cout << "\n";
+
+    jiPitchSet = generateJIPitchSet(primes, 240, 0.0, 1.1);
+    std::cout << "JI Pitch Set: ";
+    for (auto pitch : jiPitchSet) {
+        std::cout << pitch.label << "(" << pitch.log2fr << ") ";
+    }
+    std::cout << "\n";
+
+    hsPitchSet = generateHarmonicSeriesPitchSet(primes, 17, 1.001);
     std::cout << "Harmonic Series Pitch Set: ";
     for (auto pitch : hsPitchSet) {
         std::cout << pitch.label << "(" << pitch.log2fr << ") ";
