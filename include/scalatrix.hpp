@@ -6,6 +6,7 @@
 #include "scalatrix/scale.hpp"
 #include "scalatrix/params.hpp"
 #include "scalatrix/mos.hpp"
+#include "scalatrix/pitchset.hpp"
 
 
 #endif // SCALATRIX_HPP

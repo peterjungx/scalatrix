@@ -14,6 +14,7 @@ set(SOURCES
     src/lattice.cpp
     src/params.cpp
     src/mos.cpp
+    src/pitchset.cpp
     src/main.cpp  # Ensure included
 )
 

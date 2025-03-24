@@ -70,6 +70,39 @@ int main() {
     std::cout << mos.nodeLabelLetterWithOctaveNumber({0,-1}) << " ";
 
 
+    // test pitchSets
+    auto etPitchSet = generateETPitchSet(12, 1.0);
+    std::cout << "ET Pitch Set: ";
+    for (auto pitch : etPitchSet) {
+        std::cout << pitch.label << "(" << pitch.log2fr << ") ";
+    }
+    std::cout << "\n";
+
+    // default primes list
+    auto primes = generateDefaultPrimeList(4);
+    primes.erase(primes.begin() + 2);
+    std::cout << "Prime List: ";
+    for (auto prime : primes) {
+        std::cout << prime.label << " ";
+    }
+    std::cout << "\n";
+
+    auto jiPitchSet = generateJIPitchSet(primes, 240);
+    std::cout << "JI Pitch Set: ";
+    for (auto pitch : jiPitchSet) {
+        std::cout << pitch.label << "(" << pitch.log2fr << ") ";
+    }
+    std::cout << "\n";
+
+    auto hsPitchSet = generateHarmonicSeriesPitchSet(generateDefaultPrimeList(3), 17, 1.001);
+    std::cout << "Harmonic Series Pitch Set: ";
+    for (auto pitch : hsPitchSet) {
+        std::cout << pitch.label << "(" << pitch.log2fr << ") ";
+    }
+    std::cout << "\n";
+
+
+
     return 0;
 }
 
