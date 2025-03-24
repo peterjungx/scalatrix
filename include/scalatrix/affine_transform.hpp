@@ -59,7 +59,6 @@ public:
     AffineTransform operator*(const AffineTransform& M) const;
     AffineTransform inverse() const;
     Vector2d apply(const Vector2d& v) const;
-    Vector2d apply(const Vector2i& v) const;
 };
 
 } // namespace scalatrix

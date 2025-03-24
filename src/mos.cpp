@@ -284,7 +284,6 @@ void MOS::retuneThreePoints(Vector2i fixed1, Vector2i fixed2, Vector2i v, double
     _recalcOnRetuneUsingAffine(A);
 };
 
-
 Scale MOS::generateScaleFromMOS(double base_freq, int n_nodes, int root){
     Scale scale = Scale(base_freq, n_nodes, root);
     for (int i=-root; i<n_nodes-root; i++){

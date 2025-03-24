@@ -30,6 +30,22 @@ EMSCRIPTEN_BINDINGS(scalatrix) {
         .function("angle", &MOS::angle)
         .function("angleStd", &MOS::angleStd)
         .function("gFromAngle", &MOS::gFromAngle)
+        .function("accidentalString", &MOS::accidentalString)
+        .function("nodeLabelDigit", &MOS::nodeLabelDigit)
+        .function("nodeLabelLetter", &MOS::nodeLabelLetter)
+        .function("nodeLabelLetterWithOctaveNumber", &MOS::nodeLabelLetterWithOctaveNumber)
+        .function("retuneZeroPoint", &MOS::retuneZeroPoint)
+        .function("retuneOnePoint", &MOS::retuneOnePoint)
+        .function("retuneTwoPoints", &MOS::retuneTwoPoints)
+        .function("retuneThreePoints", &MOS::retuneThreePoints)
+        .function("generateScaleFromMOS", &MOS::generateScaleFromMOS)
+        .function("retuneScaleWithMOS", &MOS::retuneScaleWithMOS)
+        .property("L_vec", &MOS::L_vec)
+        .property("s_vec", &MOS::s_vec)
+        .property("chroma_vec", &MOS::chroma_vec)
+        .property("L_fr", &MOS::L_fr)
+        .property("s_fr", &MOS::s_fr)
+        .property("chroma_fr", &MOS::chroma_fr)
         .property("a", &MOS::a)
         .property("b", &MOS::b)
         .property("n", &MOS::n)
@@ -47,6 +63,26 @@ EMSCRIPTEN_BINDINGS(scalatrix) {
         .property("mosTransform", &MOS::mosTransform)
         .property("v_gen", &MOS::v_gen)
         .property("base_scale", &MOS::base_scale);
+
+    emscripten::value_object<PitchSetPitch>("PitchSetPitch")
+        .field("label", &PitchSetPitch::label)
+        .field("log2fr", &PitchSetPitch::log2fr);
+    
+    emscripten::class_<PitchSet>("PitchSet")
+        .constructor<>()
+        .function("generateETPitchSet", &generateETPitchSet)
+        .function("generateJIPitchSet", &generateJIPitchSet)
+        .function("generateHarmonicSeriesPitchSet", &generateHarmonicSeriesPitchSet);
+    
+    emscripten::value_object<PseudoPrimeInt>("PseudoPrimeInt")
+        .field("label", &PseudoPrimeInt::label)
+        .field("number", &PseudoPrimeInt::number)
+        .field("log2fr", &PseudoPrimeInt::log2fr);
+    
+    emscripten::class_<PrimeList>("PrimeList")
+        .constructor<>()
+        .function("pseudoPrimeFromIndexNumber", &pseudoPrimeFromIndexNumber)
+        .function("generateDefaultPrimeList", &generateDefaultPrimeList);
 
     emscripten::value_object<Vector2d>("Vector2d")
         .field("x", &Vector2d::x)

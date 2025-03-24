@@ -72,10 +72,6 @@ Vector2d AffineTransform::apply(const Vector2d& v) const {
     return {a * v.x + b * v.y + tx, c * v.x + d * v.y + ty};
 }
 
-Vector2d AffineTransform::apply(const Vector2i& v) const {
-    return {a * v.x + b * v.y + tx, c * v.x + d * v.y + ty};
-}
-
 AffineTransform AffineTransform::inverse() const {
     double det = a * d - b * c;
     assert(std::abs(det) > 1e-7);
