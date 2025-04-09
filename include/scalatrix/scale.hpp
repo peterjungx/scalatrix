@@ -7,17 +7,20 @@
 #include <string>
 #include <vector>
 
+const double DEFAULT_12TET_C_PITCH = 261.6255653006;
+
 namespace scalatrix {
 
 struct Node {
+    Node() noexcept : natural_coord(), tuning_coord(), pitch(0.0), isTempered(false), temperedPitch() {};
+
     Vector2i natural_coord;  // Integer coords in scale's natural system
     Vector2d tuning_coord;   // Floating-point coords in tuning system
     double pitch;
     bool isTempered;
     PitchSetPitch temperedPitch;
-    Node() noexcept : natural_coord(), tuning_coord(), pitch(0.0), isTempered(false), temperedPitch() {}
     bool operator<(const Node& other) const noexcept;
-    // assignment operator
+
     Node& operator=(const Node& other) {
         natural_coord = other.natural_coord;
         tuning_coord = other.tuning_coord;
@@ -27,11 +30,15 @@ struct Node {
 };
 
 class Scale {
+private:
+    std::vector<Node> nodes_;
+    double base_freq_;
+    int root_idx_;
+    void initNodes(int N);
 public:
-    Scale(double base_freq = 261.63, int N = 128, int root_node_idx = 60);
-    
-
+    Scale(double base_freq = DEFAULT_12TET_C_PITCH, int N = 128, int root_node_idx = 60);
     static Scale& fromAffine(const AffineTransform& M, const double base_freq, int N, int n_root);
+
     void print(int first = 58, int num = 5) const;
     std::vector<Node>& getNodes();
     void recalcWithAffine(const AffineTransform& A, int N, int n_root);
@@ -41,11 +48,6 @@ public:
 
     ~Scale();
 
-private:
-    void initNodes(int N);
-    std::vector<Node> nodes_;
-    double base_freq_;
-    int root_idx_;
 };
 
 } // namespace scalatrix

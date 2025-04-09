@@ -29,8 +29,11 @@ public:
     static MOS& fromParams(int a, int b, int m, double e, double g);
     //static MOS& fromImpliedAffine(const AffineTransform& A, int repetitions);
     static MOS& fromG(int depth, int m, double g, double e, int repetitions = 1);
+    void adjustG(int depth, int m, double g, double e, int repetitions = 1);
     void adjustParams(int a, int b, int m, double e, double g);
     //void adjustParamsFromImpliedAffine(const AffineTransform& A);
+
+    double coordToFreq(double x, double y, double base_freq);
 
     double angle() const;
     double angleStd() const;
@@ -56,6 +59,8 @@ public:
     void retuneScaleWithMOS(Scale& scale, double base_freq);
 
     Vector2i mapFromMOS(MOS& other, Vector2i v);
+
+    bool nodeInScale(Vector2i v) const;
 
 };
 

@@ -20,6 +20,10 @@ Vector2i IntegerAffineTransform::apply(const Vector2i& v) const {
     return {a * v.x + b * v.y + tx, c * v.x + d * v.y + ty};
 }
 
+IntegerAffineTransform IntegerAffineTransform::applyAffine(const IntegerAffineTransform& M) const {
+    return {a * M.a + b * M.c, a * M.b + b * M.d, c * M.a + d * M.c, c * M.b + d * M.d, a * M.tx + b * M.ty + tx, c * M.tx + d * M.ty + ty};
+}
+
 IntegerAffineTransform IntegerAffineTransform::inverse() const {
     int det = a * d - b * c;
     assert(det != 0);
@@ -65,11 +69,15 @@ Vector2d AffineTransform::operator*(const Vector2i& v) const {
 }
 
 AffineTransform AffineTransform::operator*(const AffineTransform& M) const {
-    return {a * M.a + b * M.c, a * M.b + b * M.d, c * M.a + d * M.c, c * M.b + d * M.d, tx * M.a + ty * M.c + M.tx, tx * M.b + ty * M.d + M.ty};
+    return {a * M.a + b * M.c, a * M.b + b * M.d, c * M.a + d * M.c, c * M.b + d * M.d, a * M.tx + b * M.ty + tx, c * M.tx + d * M.ty + ty};
 }
 
 Vector2d AffineTransform::apply(const Vector2d& v) const {
     return {a * v.x + b * v.y + tx, c * v.x + d * v.y + ty};
+}
+
+AffineTransform AffineTransform::applyAffine(const AffineTransform& M) const {
+    return {a * M.a + b * M.c, a * M.b + b * M.d, c * M.a + d * M.c, c * M.b + d * M.d, a * M.tx + b * M.ty + tx, c * M.tx + d * M.ty + ty};
 }
 
 AffineTransform AffineTransform::inverse() const {

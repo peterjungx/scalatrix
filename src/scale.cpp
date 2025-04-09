@@ -5,15 +5,6 @@
 
 namespace scalatrix {
 
-bool Node::operator<(const Node& other) const noexcept {
-    // Your implementation (e.g., compare tuning_coord.y)
-    return false;
-}
-
-Scale::Scale(double base_freq, int N, int root_node_idx) : base_freq_(base_freq), root_idx_(root_node_idx) {
-    initNodes(N);
-}
-
 void Scale::initNodes(int N){
     nodes_.clear();
     nodes_.reserve(N);
@@ -21,6 +12,10 @@ void Scale::initNodes(int N){
         nodes_.push_back(Node());
     }
 }
+
+Scale::Scale(double base_freq, int N, int root_node_idx) : base_freq_(base_freq), root_idx_(root_node_idx) {
+    initNodes(N);
+}  
 
 /*static*/ 
 Scale& Scale::fromAffine(const AffineTransform& A, const double base_freq, int N, int root_node_idx) {
@@ -99,6 +94,10 @@ void Scale::retuneWithAffine(const AffineTransform& A) {
     }
 }
 
+bool Node::operator<(const Node& other) const noexcept {
+    return tuning_coord.x < other.tuning_coord.x;
+}
+
 void Scale::print(int first, int num) const {
     for (int i = first; i < first + num; ++i) {
         if (i < 0 || i >= nodes_.size()) {
@@ -146,7 +145,7 @@ void Scale::temperToPitchSet(PitchSet& pitchset){
 };
 
 
-std::vector<Node>& Scale::getNodes() {
+std::vector<Node>& Scale::getNodes(){
     return nodes_;
 }
 

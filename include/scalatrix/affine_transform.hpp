@@ -28,6 +28,7 @@ public:
     Vector2i operator*(const Vector2i& v) const;
     IntegerAffineTransform inverse() const;  // May need special handling if not invertible
     Vector2i apply(const Vector2i& v) const;
+    IntegerAffineTransform applyAffine(const IntegerAffineTransform& M) const;
 
     static IntegerAffineTransform& linearFromTwoDots(
         const Vector2i& a1, const Vector2i& a2,
@@ -59,6 +60,7 @@ public:
     AffineTransform operator*(const AffineTransform& M) const;
     AffineTransform inverse() const;
     Vector2d apply(const Vector2d& v) const;
+    AffineTransform applyAffine(const AffineTransform& M) const;
 };
 
 } // namespace scalatrix

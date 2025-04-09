@@ -113,6 +113,10 @@ void MOS::updateVectors(){
     this->chroma_fr = this->L_fr - this->s_fr;
 }
 
+double MOS::coordToFreq(double x, double y, double base_freq){
+    return base_freq * std::exp2((this->impliedAffine * Vector2d(x,y)).x);
+}
+
 void MOS::adjustParams(int a, int b, int m, double e, double g){
     assert(a > 0);
     assert(b > 0);
@@ -151,6 +155,24 @@ void MOS::adjustParams(int a, int b, int m, double e, double g){
         {1, 0}, {1, 1},
         v_gen, {a0, b0}
     );
+}
+
+void MOS::adjustG(int depth, int m, double g, double e, int _repetitions){
+    this->repetitions = _repetitions;
+    int a0 = 1;
+    int b0 = 1;
+    double a_len = g;
+    double b_len = 1.0 - g;
+    for (int i = 0; i < depth; i++) {
+        if (a_len > b_len) {
+            b0+=a0;
+            a_len -= b_len;
+        } else {
+            a0+=b0;
+            b_len -= a_len;
+        }
+    }
+    this->adjustParams(a0*repetitions, b0*repetitions, m, e, g);
 }
 
 MOS& MOS::fromG(int depth, int m, double g, double e, int repetitions){
@@ -222,11 +244,11 @@ std::string MOS::accidentalString(Vector2i v, bool swap) const{
     if (acc != 0) {
         while (acc < 0) {
             acc += 1;
-            result += "♭";
+            result += "\u266D"; // U+266D ♭
         }
         while (acc > 0) {
             acc -= 1;
-            result += "♯";
+            result += "\u266F"; // U+266F ♯
         }
     }
     return result;
@@ -235,14 +257,14 @@ std::string MOS::accidentalString(Vector2i v, bool swap) const{
 std::string MOS::nodeLabelDigit(Vector2i v) const{
     int dia = (v.x + v.y + 128*n) % n;
     std::string result = std::to_string(dia+1);
-    result += accidentalString(v);
+    result = accidentalString(v) + result;
     return result;
 };
 std::string MOS::nodeLabelLetter(Vector2i v) const{
     int dia = (v.x + v.y + 2 + 128*n) % n;
     char letter = 'A' + dia;
     std::string result(1, letter);
-    result += accidentalString(v);
+    result = accidentalString(v) + result;
     return result;
 };
 std::string MOS::nodeLabelLetterWithOctaveNumber(Vector2i v, int middle_C_octave) const{
@@ -336,6 +358,15 @@ Vector2i MOS::mapFromMOS(MOS& other, Vector2i v){
     Vector2i result = applyPathReverse(other.path, v);
     result = applyPath(path, result);
     return result;
+}
+
+bool MOS::nodeInScale(Vector2i v) const{
+    // check if the node is in the scale
+    int d = v.x * b - v.y * a + mode;
+    if (d < 0 || d >= n) {
+        return false;
+    }
+    return true;
 }
 
 } // namespace scalatrix

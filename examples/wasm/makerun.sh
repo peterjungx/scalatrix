@@ -1,2 +1,2 @@
 !#/bin/bash
-emcmake cmake . -DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/Cellar/emscripten/4.0.1/libexec/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_PREFIX_PATH="/opt/homebrew/Cellar/eigen/3.4.0_1" && emmake make && python -m http.server
+emcmake cmake . -DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/Cellar/emscripten/4.0.1/libexec/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_PREFIX_PATH="/opt/homebrew/Cellar/eigen/3.4.0_1" && emmake make && python3 -m http.server

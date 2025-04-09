@@ -1,0 +1,25 @@
+{
+    "name": "scalatrix",
+    "version": "1.0.0",
+    "description": "PitchGrid Scalatrix Library",
+    "main": "index.js",
+    "types": "index.d.ts",
+    "type": "module",
+    "browser": {
+        "index.js": "./index.js"
+    },
+    "files": [
+        "lib/",
+        "index.js",
+        "index.d.ts",
+        "lib/scalatrix.d.ts"
+    ],
+    "keywords": [
+        "emscripten",
+        "microtonal",
+        "pitchgrid",
+        "scalatrix"
+    ],
+    "author": "Peter Jung",
+    "license": "MIT"
+}

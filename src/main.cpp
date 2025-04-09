@@ -5,6 +5,18 @@ using namespace scalatrix;
 #include <emscripten/bind.h>
 
 EMSCRIPTEN_BINDINGS(scalatrix) {
+    emscripten::class_<IntegerAffineTransform>("IntegerAffineTransform")
+        .constructor<int, int, int, int, int, int>()  // Full constructor with tx, ty
+        .property("a", &IntegerAffineTransform::a)
+        .property("b", &IntegerAffineTransform::b)
+        .property("c", &IntegerAffineTransform::c)
+        .property("d", &IntegerAffineTransform::d)
+        .property("tx", &IntegerAffineTransform::tx)
+        .property("ty", &IntegerAffineTransform::ty)
+        .function("apply", &IntegerAffineTransform::apply)
+        .function("applyAffine", &IntegerAffineTransform::applyAffine)
+        .function("inverse", &IntegerAffineTransform::inverse);
+
     emscripten::class_<AffineTransform>("AffineTransform")
         .constructor<double, double, double, double, double, double>()  // Full constructor with tx, ty
         .property("a", &AffineTransform::a)
@@ -14,6 +26,7 @@ EMSCRIPTEN_BINDINGS(scalatrix) {
         .property("tx", &AffineTransform::tx)
         .property("ty", &AffineTransform::ty)
         .function("apply", &AffineTransform::apply)
+        .function("applyAffine", &AffineTransform::applyAffine)
         .function("inverse", &AffineTransform::inverse);
 
     emscripten::class_<Scale>("Scale")
@@ -23,10 +36,15 @@ EMSCRIPTEN_BINDINGS(scalatrix) {
         .function("retuneWithAffine", &Scale::retuneWithAffine)
         .function("getNodes", &Scale::getNodes)
         .function("print", &Scale::print);
-
-
+    
+    //emscripten::register_vector<bool>("mosPath");
+    
     emscripten::class_<MOS>("MOS")
         .class_function("fromG", &MOS::fromG)
+        .class_function("fromParams", &MOS::fromParams)
+        .function("adjustG", &MOS::adjustG)
+        .function("adjustParams", &MOS::adjustParams)
+        .function("coordToFreq", &MOS::coordToFreq)
         .function("angle", &MOS::angle)
         .function("angleStd", &MOS::angleStd)
         .function("gFromAngle", &MOS::gFromAngle)
@@ -40,6 +58,7 @@ EMSCRIPTEN_BINDINGS(scalatrix) {
         .function("retuneThreePoints", &MOS::retuneThreePoints)
         .function("generateScaleFromMOS", &MOS::generateScaleFromMOS)
         .function("retuneScaleWithMOS", &MOS::retuneScaleWithMOS)
+        .function("nodeInScale", &MOS::nodeInScale)
         .property("L_vec", &MOS::L_vec)
         .property("s_vec", &MOS::s_vec)
         .property("chroma_vec", &MOS::chroma_vec)
@@ -58,31 +77,30 @@ EMSCRIPTEN_BINDINGS(scalatrix) {
         .property("equave", &MOS::equave)
         .property("period", &MOS::period)
         .property("generator", &MOS::generator)
-        .property("path", &MOS::path)
+        //.property("path", &MOS::path)
         .property("impliedAffine", &MOS::impliedAffine)
         .property("mosTransform", &MOS::mosTransform)
         .property("v_gen", &MOS::v_gen)
-        .property("base_scale", &MOS::base_scale);
+        .property("base_scale", &MOS::base_scale)
+    ;
 
-    emscripten::value_object<PitchSetPitch>("PitchSetPitch")
-        .field("label", &PitchSetPitch::label)
-        .field("log2fr", &PitchSetPitch::log2fr);
-    
-    emscripten::class_<PitchSet>("PitchSet")
-        .constructor<>()
-        .function("generateETPitchSet", &generateETPitchSet)
-        .function("generateJIPitchSet", &generateJIPitchSet)
-        .function("generateHarmonicSeriesPitchSet", &generateHarmonicSeriesPitchSet);
-    
-    emscripten::value_object<PseudoPrimeInt>("PseudoPrimeInt")
-        .field("label", &PseudoPrimeInt::label)
-        .field("number", &PseudoPrimeInt::number)
-        .field("log2fr", &PseudoPrimeInt::log2fr);
-    
-    emscripten::class_<PrimeList>("PrimeList")
-        .constructor<>()
-        .function("pseudoPrimeFromIndexNumber", &pseudoPrimeFromIndexNumber)
-        .function("generateDefaultPrimeList", &generateDefaultPrimeList);
+    //emscripten::value_object<PitchSetPitch>("PitchSetPitch")
+    //    .field("label", &PitchSetPitch::label)
+    //    .field("log2fr", &PitchSetPitch::log2fr);
+    //
+    //emscripten::register_vector<PitchSetPitch>("PitchSet");
+    //emscripten::function("generateETPitchSet", &scalatrix::generateETPitchSet);
+    //emscripten::function("generateJIPitchSet", &scalatrix::generateJIPitchSet);
+    //emscripten::function("generateHarmonicSeriesPitchSet", &scalatrix::generateHarmonicSeriesPitchSet);
+    //
+    //emscripten::value_object<PseudoPrimeInt>("PseudoPrimeInt")
+    //    .field("label", &PseudoPrimeInt::label)
+    //    .field("number", &PseudoPrimeInt::number)
+    //    .field("log2fr", &PseudoPrimeInt::log2fr);
+    //emscripten::function("pseudoPrimeFromIndexNumber", &scalatrix::pseudoPrimeFromIndexNumber);
+    //
+    //emscripten::register_vector<PseudoPrimeInt>("PrimeList");
+    //emscripten::function("generateDefaultPrimeList", &scalatrix::generateDefaultPrimeList);
 
     emscripten::value_object<Vector2d>("Vector2d")
         .field("x", &Vector2d::x)
@@ -100,6 +118,23 @@ EMSCRIPTEN_BINDINGS(scalatrix) {
     emscripten::register_vector<Node>("VectorNode");
 
     emscripten::function("affineFromThreeDots", &scalatrix::affineFromThreeDots);
+
+
+    emscripten::value_object<PseudoPrimeInt>("PseudoPrimeInt")
+        .field("label", &PseudoPrimeInt::label)
+        .field("number", &PseudoPrimeInt::number)
+        .field("log2fr", &PseudoPrimeInt::log2fr);
+    emscripten::function("pseudoPrimeFromIndexNumber", &scalatrix::pseudoPrimeFromIndexNumber);
+    emscripten::register_vector<PseudoPrimeInt>("PrimeList");
+    emscripten::function("generateDefaultPrimeList", &scalatrix::generateDefaultPrimeList);
+
+    emscripten::value_object<PitchSetPitch>("PitchSetPitch")
+        .field("label", &PitchSetPitch::label)
+        .field("log2fr", &PitchSetPitch::log2fr);
+    emscripten::register_vector<PitchSetPitch>("PitchSet");
+    emscripten::function("generateHarmonicSeriesPitchSet", &scalatrix::generateHarmonicSeriesPitchSet);
+    emscripten::function("generateETPitchSet", &scalatrix::generateETPitchSet);
+    emscripten::function("generateJIPitchSet", &scalatrix::generateJIPitchSet);
 }
 #endif
 

@@ -31,8 +31,18 @@ cd build/python
 cmake ../.. -DPython3_EXECUTABLE=$(which python3)
 cd ../..
 
+# Setup iOS build
+echo "Configuring iOS build..."
+mkdir -p build/ios
+cd build/ios
+cmake ../.. -DBUILD_IOS=ON -LA > cmake_debug.txt 2>&1
+cd ../..
+
+
 # Setup root-level Makefile for custom targets
 echo "Configuring root-level Makefile..."
 cmake .  # Generates Makefile in scalatrix/ with native as default
 
-echo "CMake setup complete. Use 'make native', 'make wasm', 'make build_all', or 'make clean_all' from here."
+
+
+echo "CMake setup complete. Use 'make native', 'make wasm', 'make python', 'make ios', 'make build_all', or 'make clean_all'."
