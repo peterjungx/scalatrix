@@ -4,7 +4,7 @@
 set -e
 
 # Use Homebrew's Emscripten directly
-EMSDK_PATH="/opt/homebrew/Cellar/emscripten/4.0.1"
+EMSDK_PATH="/opt/homebrew/Cellar/emscripten/4.0.7"
 if [ ! -x "$EMSDK_PATH/bin/emcc" ]; then
     echo "Error: Emscripten not found at $EMSDK_PATH/bin/emcc. Ensure it's installed via Homebrew (brew install emscripten)."
     exit 1

@@ -9,12 +9,18 @@ PYBIND11_MODULE(scalatrix, m) {
     py::class_<Vector2d>(m, "Vector2d")
         .def(py::init<double, double>())
         .def_readwrite("x", &Vector2d::x)
-        .def_readwrite("y", &Vector2d::y);
+        .def_readwrite("y", &Vector2d::y)
+        .def("__repr__", [](const Vector2d &v) {
+            return "(" + std::to_string(v.x) + ", " + std::to_string(v.y) + ")";
+        });
+        
 
     py::class_<Vector2i>(m, "Vector2i")
         .def(py::init<int, int>())
         .def_readwrite("x", &Vector2i::x)
-        .def_readwrite("y", &Vector2i::y);
+        .def_readwrite("y", &Vector2i::y).def("__repr__", [](const Vector2d &v) {
+            return "(" + std::to_string(v.x) + ", " + std::to_string(v.y) + ")";
+        });
 
     py::class_<Node>(m, "Node")
         .def(py::init<>())
@@ -22,7 +28,15 @@ PYBIND11_MODULE(scalatrix, m) {
         .def_readwrite("tuning_coord", &Node::tuning_coord)
         .def_readwrite("pitch", &Node::pitch)
         .def_readwrite("isTempered", &Node::isTempered)
-        .def_readwrite("temperedPitch", &Node::temperedPitch);
+        .def_readwrite("temperedPitch", &Node::temperedPitch)
+        .def("__repr__", [](const Node &n) {
+            return "Node(natural_coord=(" + std::to_string(n.natural_coord.x)
+             + ", " + std::to_string(n.natural_coord.y) +
+                   "), tuning_coord=(" + std::to_string(n.tuning_coord.x) + ", " + std::to_string(n.tuning_coord.y) +
+                   "), pitch=" + std::to_string(n.pitch) +
+                   ", isTempered=" + std::to_string(n.isTempered);// +
+                  //", temperedPitch=" + std::to_string(n.temperedPitch) + ")";
+        });
 
 
     py::class_<AffineTransform>(m, "AffineTransform")
@@ -35,7 +49,9 @@ PYBIND11_MODULE(scalatrix, m) {
         .def_readwrite("ty", &AffineTransform::ty)
         .def("apply", &AffineTransform::apply)
         .def("inverse", &AffineTransform::inverse)
-        ;
+        .def("__mul__", [](const AffineTransform &a, const Vector2d &b) {
+            return a.apply(b);
+        }, py::is_operator());
 
     py::class_<Scale>(m, "Scale")
         .def(py::init<double>())
