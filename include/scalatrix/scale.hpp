@@ -45,6 +45,7 @@ public:
     void retuneWithAffine(const AffineTransform& A);
     int getRootIdx() const { return root_idx_; }
     void temperToPitchSet(PitchSet& pitchset);
+    double getBaseFreq() const { return base_freq_; }
 
     ~Scale();
 
