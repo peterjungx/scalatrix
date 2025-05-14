@@ -14,6 +14,10 @@ struct Vector2i {
     Vector2i operator+(const Vector2i& v) { return {x + v.x, y + v.y}; }
     Vector2i operator-(const Vector2i& v) { return {x - v.x, y - v.y}; }
     Vector2i operator*(const int s) { return {x * s, y * s}; }
+    bool operator<(const Vector2i& v) const {
+        return (x < v.x) || (x == v.x && y < v.y);
+    };
+    bool operator==(const Vector2i& v) const { return x == v.x && y == v.y; }
 
 };
 
