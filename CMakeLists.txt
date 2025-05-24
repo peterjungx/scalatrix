@@ -15,6 +15,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Optional archive output directory
+option(SCALATRIX_SET_ARCHIVE_OUTPUT_DIR "Set custom archive output directory" OFF)
+if(SCALATRIX_SET_ARCHIVE_OUTPUT_DIR)
+    set(SCALATRIX_ARCHIVE_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/build/native" CACHE PATH "Archive output directory")
+endif()
+
 set(Eigen3_DIR "/opt/homebrew/Cellar/eigen/3.4.0_1/share/eigen3/cmake")
 find_package(Eigen3 REQUIRED)
 
@@ -54,11 +60,15 @@ set(SOURCES
 # endif()
 
 add_library(scalatrix STATIC ${SOURCES})
-    target_include_directories(scalatrix PUBLIC include)
-    target_link_libraries(scalatrix PRIVATE Eigen3::Eigen)
+target_include_directories(scalatrix PUBLIC include)
+target_link_libraries(scalatrix PRIVATE Eigen3::Eigen)
+
+# Optionally set archive output directory
+if(SCALATRIX_SET_ARCHIVE_OUTPUT_DIR)
     set_target_properties(scalatrix PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/native
-)
+        ARCHIVE_OUTPUT_DIRECTORY ${SCALATRIX_ARCHIVE_OUTPUT_DIR}
+    )
+endif()
 
 if (EMSCRIPTEN)
     add_executable(scalatrix_wasm ${SOURCES})
