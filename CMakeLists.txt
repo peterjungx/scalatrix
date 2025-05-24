@@ -15,9 +15,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(Eigen3_DIR "/opt/homebrew/Cellar/eigen/3.4.0_1/share/eigen3/cmake")
-find_package(Eigen3 REQUIRED)
-
 set(SOURCES
     src/affine_transform.cpp
     src/scale.cpp
@@ -25,6 +22,7 @@ set(SOURCES
     src/params.cpp
     src/mos.cpp
     src/pitchset.cpp
+    src/linear_solver.cpp
     src/main.cpp  # Ensure included
 )
 
@@ -55,7 +53,6 @@ set(SOURCES
 
 add_library(scalatrix STATIC ${SOURCES})
     target_include_directories(scalatrix PUBLIC include)
-    target_link_libraries(scalatrix PRIVATE Eigen3::Eigen)
     set_target_properties(scalatrix PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/native
 )
@@ -63,7 +60,6 @@ add_library(scalatrix STATIC ${SOURCES})
 if (EMSCRIPTEN)
     add_executable(scalatrix_wasm ${SOURCES})
     target_include_directories(scalatrix_wasm PUBLIC include)
-    target_link_libraries(scalatrix_wasm PRIVATE Eigen3::Eigen)
     target_link_options(scalatrix_wasm PRIVATE
         --emit-tsd "$<TARGET_FILE_DIR:scalatrix_wasm>/scalatrix.d.ts"
     )
@@ -92,7 +88,7 @@ if(BUILD_PYTHON)
     # Python bindings target
     add_library(scalatrix_python MODULE ${SOURCES} src/python_bindings.cpp)
     target_include_directories(scalatrix_python PUBLIC include)
-    target_link_libraries(scalatrix_python PRIVATE Eigen3::Eigen pybind11::pybind11 Python3::Python)
+    target_link_libraries(scalatrix_python PRIVATE pybind11::pybind11 Python3::Python)
     set_target_properties(scalatrix_python PROPERTIES
         OUTPUT_NAME "scalatrix"
         PREFIX ""  # Avoid lib prefix
@@ -161,3 +157,10 @@ add_custom_target(build_all
     COMMAND ${CMAKE_COMMAND} --build ${CMAKE_SOURCE_DIR}/build/ios --target scalatrix_ios
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
+
+# Testing support (optional)
+option(BUILD_TESTS "Build tests" OFF)
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
