@@ -15,6 +15,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+
+# Optional archive output directory
+option(SCALATRIX_SET_ARCHIVE_OUTPUT_DIR "Set custom archive output directory" OFF)
+if(SCALATRIX_SET_ARCHIVE_OUTPUT_DIR)
+    set(SCALATRIX_ARCHIVE_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/build/native" CACHE PATH "Archive output directory")
+endif()
+
+
 set(SOURCES
     src/affine_transform.cpp
     src/scale.cpp
@@ -52,10 +60,15 @@ set(SOURCES
 # endif()
 
 add_library(scalatrix STATIC ${SOURCES})
-    target_include_directories(scalatrix PUBLIC include)
+
+target_include_directories(scalatrix PUBLIC include)
+
+# Optionally set archive output directory
+if(SCALATRIX_SET_ARCHIVE_OUTPUT_DIR)
     set_target_properties(scalatrix PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/native
-)
+        ARCHIVE_OUTPUT_DIRECTORY ${SCALATRIX_ARCHIVE_OUTPUT_DIR}
+    )
+endif()
 
 if (EMSCRIPTEN)
     add_executable(scalatrix_wasm ${SOURCES})
