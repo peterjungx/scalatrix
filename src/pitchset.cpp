@@ -37,11 +37,11 @@ PitchSet generateETPitchSet(unsigned int n_et, double equave_log2fr) {
     return pitchset;
 };
 
-PitchSet generateJIPitchSet(PrimeList primes, int max_numtimesden, double min_log2fr, double max_log2fr) {
+PitchSet generateJIPitchSet(PrimeList primes, int max_numorden, double min_log2fr, double max_log2fr) {
     PitchSet pitchset;
     PrimeList nums;
-    // generate all numbers with prime factors in primes up to max_numtimesden
-    for (int i = 1; i < max_numtimesden; i++) {
+    // generate all numbers with prime factors in primes up to max_numorden
+    for (int i = 1; i < max_numorden; i++) {
         int r = i;
         double log2fr = 0.0;
         for (auto p : primes) {
@@ -64,7 +64,7 @@ PitchSet generateJIPitchSet(PrimeList primes, int max_numtimesden, double min_lo
             if (std::gcd(num.number, den.number) > 1){
                 continue;
             }
-            if (num.number * den.number <= max_numtimesden ){
+            if (num.number <= max_numorden && den.number <= max_numorden) {
                 PitchSetPitch pitch;
                 pitch.label = num.label + ":" + den.label;
                 pitch.log2fr = num.log2fr - den.log2fr;
