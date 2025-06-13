@@ -7,6 +7,7 @@
 #include "scalatrix/params.hpp"
 #include "scalatrix/mos.hpp"
 #include "scalatrix/pitchset.hpp"
+#include "scalatrix/label_calculator.hpp"
 
 
 #endif // SCALATRIX_HPP

@@ -178,6 +178,12 @@ int main() {
     s.temperToPitchSet(jiPitchSet);
     s.print(58, 12);
 
+    std::cout << "Normalized note labels:\n";
+    LabelCalculator lc;
+    for (auto node : s.getNodes()) {
+        std::cout << lc.noteLabelNormalized(mos, node.natural_coord) << " ";
+    }
+
     return 0;
 }
 
