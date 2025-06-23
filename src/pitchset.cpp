@@ -30,7 +30,7 @@ PitchSet generateETPitchSet(unsigned int n_et, double equave_log2fr) {
     PitchSet pitchset;
     for (int i = 0; i < n_et + 1; i++) {
         PitchSetPitch p;
-        p.label = "^" + std::to_string(i) + "/" + std::to_string(n_et);
+        p.label = std::to_string(i) + "\\" + std::to_string(n_et);
         p.log2fr = i * equave_log2fr / n_et;
         pitchset.push_back(p);
     }
