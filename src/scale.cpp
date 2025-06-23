@@ -17,6 +17,15 @@ Scale::Scale(double base_freq, int N, int root_node_idx) : base_freq_(base_freq)
     initNodes(N);
 }  
 
+/**
+ * Core implementation of "a scale is a path on a 2D lattice"
+ * 
+ * This method implements the fundamental scalatrix concept by:
+ * 1. Applying the affine transform to redistribute lattice nodes in 2D space
+ * 2. Finding nodes that fall within the horizontal strip 0 ≤ y < 1 after transformation
+ * 3. Ordering these nodes by x-coordinate to create the sequential scale path
+ * 4. The transform must be normalized so origin (0,0) maps to (x=0, 0≤y<1)
+ */
 /*static*/ 
 Scale& Scale::fromAffine(const AffineTransform& A, const double base_freq, int N, int root_node_idx) {
 
@@ -29,6 +38,15 @@ Scale& Scale::fromAffine(const AffineTransform& A, const double base_freq, int N
     return _self;
 }
 
+/**
+ * Generates scale nodes by applying affine transform and selecting from horizontal strip
+ * 
+ * This method implements the core algorithm:
+ * 1. Apply transform A to redistribute lattice nodes
+ * 2. Find lattice vectors r,s that map closest to strip boundaries
+ * 3. Use 3-gap theorem to generate nodes within strip 0 ≤ y < 1
+ * 4. Order resulting nodes by x-coordinate to form sequential scale path
+ */
 void Scale::recalcWithAffine(const AffineTransform& A, int N, int root_node_idx) {
     
     AffineTransform M = AffineTransform(A);
@@ -44,7 +62,9 @@ void Scale::recalcWithAffine(const AffineTransform& A, int N, int root_node_idx)
 
     int n_min = -root_node_idx, n_max = N - root_node_idx;
 
-    // generate the nodes within the strip using the 3-gap theorem
+    // Generate nodes within the strip 0 ≤ y < 1 using the 3-gap theorem
+    // This creates the sequential scale path by selecting lattice nodes that
+    // fall within the horizontal strip after transformation
     Node root;
     root.natural_coord = Vector2i(0, 0);
     root.tuning_coord = A * root.natural_coord;
