@@ -60,6 +60,7 @@ public:
 
     Vector2i mapFromMOS(MOS& other, Vector2i v);
 
+    int nodeEquaveNr(Vector2i v) const {return (v.x + v.y + 256*n) / n - 256;}
     bool nodeInScale(Vector2i v) const;
 
 };
