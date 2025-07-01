@@ -114,9 +114,6 @@ void Scale::retuneWithAffine(const AffineTransform& A) {
     }
 }
 
-bool Node::operator<(const Node& other) const noexcept {
-    return tuning_coord.x < other.tuning_coord.x;
-}
 
 void Scale::print(int first, int num) const {
     for (int i = first; i < first + num; ++i) {

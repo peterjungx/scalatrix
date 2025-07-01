@@ -1,7 +1,6 @@
 # Build directories
-build/native/
-build/wasm/
-build/python/
+build/
+cmake-build-*/
 
 # CMake artifacts
 CMakeCache.txt
@@ -31,5 +30,6 @@ Makefile
 # Pyenv 
 .python-version
 
-# remove example executable
+# Remove example executables  
 examples/native/native_example
+scalatrix_example

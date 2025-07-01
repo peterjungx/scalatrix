@@ -21,7 +21,19 @@ FetchContent_MakeAvailable(Catch2)
 # Include directories
 include_directories(${CMAKE_SOURCE_DIR}/../include)
 
-# Test executable
+# Common source files
+set(SCALATRIX_SOURCES
+    ${CMAKE_SOURCE_DIR}/../src/params.cpp
+    ${CMAKE_SOURCE_DIR}/../src/affine_transform.cpp
+    ${CMAKE_SOURCE_DIR}/../src/linear_solver.cpp
+    ${CMAKE_SOURCE_DIR}/../src/scale.cpp
+    ${CMAKE_SOURCE_DIR}/../src/mos.cpp
+    ${CMAKE_SOURCE_DIR}/../src/pitchset.cpp
+    ${CMAKE_SOURCE_DIR}/../src/lattice.cpp
+    ${CMAKE_SOURCE_DIR}/../src/node.cpp
+)
+
+# Test executables
 add_executable(test_affine_transform 
     test_affine_transform.cpp
     ${CMAKE_SOURCE_DIR}/../src/params.cpp
@@ -29,12 +41,52 @@ add_executable(test_affine_transform
     ${CMAKE_SOURCE_DIR}/../src/linear_solver.cpp
 )
 
-# Link libraries
-target_link_libraries(test_affine_transform 
-    Catch2::Catch2WithMain
+add_executable(test_scale
+    test_scale.cpp
+    ${SCALATRIX_SOURCES}
 )
+
+add_executable(test_mos
+    test_mos.cpp
+    ${SCALATRIX_SOURCES}
+)
+
+add_executable(test_pitch_sets
+    test_pitch_sets.cpp
+    ${SCALATRIX_SOURCES}
+)
+
+add_executable(test_label_calculator
+    test_label_calculator.cpp
+    ${SCALATRIX_SOURCES}
+)
+
+add_executable(test_integration
+    test_integration.cpp
+    ${SCALATRIX_SOURCES}
+)
+
+add_executable(test_node
+    test_node.cpp
+    ${SCALATRIX_SOURCES}
+)
+
+# Link libraries
+target_link_libraries(test_affine_transform Catch2::Catch2WithMain)
+target_link_libraries(test_scale Catch2::Catch2WithMain)
+target_link_libraries(test_mos Catch2::Catch2WithMain)
+target_link_libraries(test_pitch_sets Catch2::Catch2WithMain)
+target_link_libraries(test_label_calculator Catch2::Catch2WithMain)
+target_link_libraries(test_integration Catch2::Catch2WithMain)
+target_link_libraries(test_node Catch2::Catch2WithMain)
 
 # Enable testing
 include(CTest)
 include(Catch)
 catch_discover_tests(test_affine_transform)
+catch_discover_tests(test_scale)
+catch_discover_tests(test_mos)
+catch_discover_tests(test_pitch_sets)
+catch_discover_tests(test_label_calculator)
+catch_discover_tests(test_integration)
+catch_discover_tests(test_node)

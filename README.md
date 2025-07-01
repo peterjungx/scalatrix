@@ -30,63 +30,47 @@ scalatrix/
 
 ## Building
 
-### Setup
+### Standard CMake Build (Recommended)
 
-Run the setup script to configure native and Wasm builds:
+Create a build directory and build the project:
+
+```bash
+mkdir -p build && cd build
+cmake ..
+make
+```
+
+This creates:
+- `build/libscalatrix.a` - Static library
+- `build/scalatrix_example` - Native example executable
+
+**Important**: All build artifacts are contained in the `build/` directory. Do not run CMake or make directly in the project root.
+
+### Alternative Build Options
+
+The project also supports specialized builds via the setup script:
 
 ```bash
 chmod +x setup_cmake.sh
 ./setup_cmake.sh
-```
-
-Creates `build/native/` and `build/wasm/` with respective Makefiles.
-
-### Native Build
-
-```bash
-make native
-```
-
-Outputs: `build/native/scalatrix.a`
-
-### Wasm Build
-
-```bash
-make wasm
-```
-Outputs: `build/wasm/scalatrix.js`
-
-### Clean
-
-```bash
-make clean_all
-```
-
-### Build All
-
-```bash
-make build_all
+make native    # Creates build/native/scalatrix.a
+make wasm      # Creates build/wasm/scalatrix.js  
+make build_all # Build all targets
+make clean_all # Clean all builds
 ```
 
 ## Examples
 
 ### Native Example
 
-Build:
+The example is built automatically with the main project. Run it from the build directory:
 
 ```bash
-cd examples/native
-cmake .
-make
+cd build
+./scalatrix_example
 ```
 
-Run:
-
-```bash
-./native_example
-```
-
-Prints a 5-note scale segment starting at index 58.
+This prints scale information and demonstrates various scalatrix functionality including MOS generation, pitch sets, and retuning operations.
 
 ### Wasm Example
 

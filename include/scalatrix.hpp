@@ -18,6 +18,7 @@
 
 #include "scalatrix/affine_transform.hpp"
 #include "scalatrix/lattice.hpp"
+#include "scalatrix/node.hpp"
 #include "scalatrix/scale.hpp"
 #include "scalatrix/params.hpp"
 #include "scalatrix/mos.hpp"

@@ -14,6 +14,7 @@ set(SOURCES
     src/mos.cpp
     src/pitchset.cpp
     src/linear_solver.cpp
+    src/node.cpp
     src/main.cpp
 )
 
