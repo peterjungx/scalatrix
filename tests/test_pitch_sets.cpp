@@ -155,7 +155,7 @@ TEST_CASE("Harmonic series pitch set generation", "[pitchset]") {
     
     SECTION("Basic harmonic series") {
         int limit = 16;
-        auto hsPitchSet = generateHarmonicSeriesPitchSet(primes, limit);
+        auto hsPitchSet = generateHarmonicSeriesPitchSet(primes, limit, 0.0, 1.001);
         
         // Should generate harmonics up to the limit
         REQUIRE(hsPitchSet.size() > 0);
@@ -185,7 +185,7 @@ TEST_CASE("Harmonic series pitch set generation", "[pitchset]") {
     SECTION("Harmonic series with tolerance") {
         int limit = 16;
         double tolerance = 1.001; // Very small tolerance
-        auto hsPitchSet = generateHarmonicSeriesPitchSet(primes, limit, tolerance);
+        auto hsPitchSet = generateHarmonicSeriesPitchSet(primes, limit, 0.0, tolerance);
         
         // Should still generate harmonics
         REQUIRE(hsPitchSet.size() > 0);
@@ -193,9 +193,54 @@ TEST_CASE("Harmonic series pitch set generation", "[pitchset]") {
     
     SECTION("Harmonic series pitches are in ascending order") {
         int limit = 32;
-        auto hsPitchSet = generateHarmonicSeriesPitchSet(primes, limit);
+        auto hsPitchSet = generateHarmonicSeriesPitchSet(primes, limit, 0.0, 1.001);
         
         // Check ascending order
+        for (size_t i = 1; i < hsPitchSet.size(); ++i) {
+            REQUIRE(hsPitchSet[i].log2fr >= hsPitchSet[i-1].log2fr);
+        }
+    }
+    
+    SECTION("Harmonic series with lower bound generates subharmonics") {
+        int base = 8;
+        double min_log2fr = -3.1; // Include pitches down to 1:8 ratio (log2fr = -3.0)
+        double max_log2fr = 1.0;
+        auto hsPitchSet = generateHarmonicSeriesPitchSet(primes, base, min_log2fr, max_log2fr);
+        
+        // Should include the 1:8 ratio (log2fr = -3.0) within tolerance
+        bool hasSubharmonic = false;
+        for (const auto& pitch : hsPitchSet) {
+            if (std::abs(pitch.log2fr - (-3.0)) < 1e-6) {
+                hasSubharmonic = true;
+                REQUIRE(pitch.label == "1:8");
+                break;
+            }
+        }
+        REQUIRE(hasSubharmonic);
+        
+        // Should include the base (8:8 = 1:1)
+        bool hasUnison = false;
+        for (const auto& pitch : hsPitchSet) {
+            if (std::abs(pitch.log2fr) < 1e-6) {
+                hasUnison = true;
+                REQUIRE(pitch.label == "8:8");
+                break;
+            }
+        }
+        REQUIRE(hasUnison);
+        
+        // Should include higher harmonics
+        bool hasHigherHarmonic = false;
+        for (const auto& pitch : hsPitchSet) {
+            if (std::abs(pitch.log2fr - 1.0) < 1e-6) {
+                hasHigherHarmonic = true;
+                REQUIRE(pitch.label == "16:8");
+                break;
+            }
+        }
+        REQUIRE(hasHigherHarmonic);
+        
+        // Should be in ascending order
         for (size_t i = 1; i < hsPitchSet.size(); ++i) {
             REQUIRE(hsPitchSet[i].log2fr >= hsPitchSet[i-1].log2fr);
         }
@@ -207,7 +252,7 @@ TEST_CASE("Pitch set integration", "[pitchset]") {
         auto etPitchSet = generateETPitchSet(12, 1.0);
         auto primes = generateDefaultPrimeList(3);
         auto jiPitchSet = generateJIPitchSet(primes, 20);
-        auto hsPitchSet = generateHarmonicSeriesPitchSet(primes, 16);
+        auto hsPitchSet = generateHarmonicSeriesPitchSet(primes, 16, 0.0, 1.001);
         
         // ET should have exactly 13 pitches (including octave)
         REQUIRE(etPitchSet.size() == 13);

@@ -89,10 +89,17 @@ PitchSet generateJIPitchSet(PrimeList primes, int max_numorden, double min_log2f
 };
 
 
-PitchSet generateHarmonicSeriesPitchSet(PrimeList primes, int base, double max_log2fr) {
+PitchSet generateHarmonicSeriesPitchSet(PrimeList primes, int base, double min_log2fr, double max_log2fr) {
     PitchSet pitchset;
     double base_log2fr = log2(base);
-    for (int num = base; num <= base * exp2(max_log2fr); num++) {
+    
+    // Calculate the range of numerators to generate
+    // For min_log2fr: num/base >= 2^min_log2fr, so num >= base * 2^min_log2fr
+    // For max_log2fr: num/base <= 2^max_log2fr, so num <= base * 2^max_log2fr
+    int min_num = std::max(1, (int)ceil(base * exp2(min_log2fr)));
+    int max_num = (int)floor(base * exp2(max_log2fr));
+    
+    for (int num = min_num; num <= max_num; num++) {
         PitchSetPitch pitch;
         pitch.label = std::to_string(num) + ":" + std::to_string(base);
         pitch.log2fr = -base_log2fr;
@@ -104,8 +111,13 @@ PitchSet generateHarmonicSeriesPitchSet(PrimeList primes, int base, double max_l
             }
         }
         pitch.log2fr += log2(r);
-        pitchset.push_back(pitch);
+        
+        // Filter pitches to ensure they're within the specified range
+        if (pitch.log2fr >= min_log2fr - 1e-6 && pitch.log2fr <= max_log2fr + 1e-6) {
+            pitchset.push_back(pitch);
+        }
     }
+    
     std::sort(pitchset.begin(), pitchset.end(), 
         [](PitchSetPitch a, PitchSetPitch b) {
             return a.log2fr < b.log2fr;

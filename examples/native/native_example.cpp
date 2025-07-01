@@ -96,7 +96,7 @@ int main() {
     }
     std::cout << "\n";
 
-    auto hsPitchSet = generateHarmonicSeriesPitchSet(primes, 17, 1.001);
+    auto hsPitchSet = generateHarmonicSeriesPitchSet(primes, 17, 0.0, 1.001);
     std::cout << "Harmonic Series Pitch Set: ";
     for (auto pitch : hsPitchSet) {
         std::cout << pitch.label << "(" << pitch.log2fr << ") ";
@@ -118,7 +118,7 @@ int main() {
     }
     std::cout << "\n";
 
-    hsPitchSet = generateHarmonicSeriesPitchSet(primes, 17, 1.001);
+    hsPitchSet = generateHarmonicSeriesPitchSet(primes, 17, 0.0, 1.001);
     std::cout << "Harmonic Series Pitch Set: ";
     for (auto pitch : hsPitchSet) {
         std::cout << pitch.label << "(" << pitch.log2fr << ") ";

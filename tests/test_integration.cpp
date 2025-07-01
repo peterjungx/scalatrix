@@ -206,7 +206,7 @@ TEST_CASE("Pitch set integration with scales", "[integration]") {
     auto primes = generateDefaultPrimeList(4); // Get 2, 3, 5, 7
     auto etPitchSet = generateETPitchSet(12, 1.0);
     auto jiPitchSet = generateJIPitchSet(primes, 20);
-    auto hsPitchSet = generateHarmonicSeriesPitchSet(primes, 16);
+    auto hsPitchSet = generateHarmonicSeriesPitchSet(primes, 16, 0.0, 1.001);
     
     SECTION("Different pitch sets produce different temperings") {
         // Create same base scale

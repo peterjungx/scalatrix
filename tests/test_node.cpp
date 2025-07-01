@@ -16,6 +16,7 @@ TEST_CASE("Node construction and basic properties", "[node]") {
         REQUIRE(node.getPitch() == 0.0);
         REQUIRE(node.getIsTempered() == false);
         REQUIRE(node.getTemperedPitch().label.empty());
+        REQUIRE(node.getClosestPitch().label.empty());
     }
     
     SECTION("Construction with parameters") {
@@ -31,6 +32,7 @@ TEST_CASE("Node construction and basic properties", "[node]") {
         REQUIRE_THAT(node.getTuningCoord().y, WithinAbs(0.3, 1e-10));
         REQUIRE_THAT(node.getPitch(), WithinAbs(440.0, 1e-10));
         REQUIRE(node.getIsTempered() == false);
+        REQUIRE(node.getClosestPitch().label.empty());
     }
 }
 
@@ -82,6 +84,18 @@ TEST_CASE("Node tempering functionality", "[node]") {
         REQUIRE_THAT(node.getTemperedPitch().log2fr, WithinAbs(0.75, 1e-10));
     }
     
+    SECTION("Setting closest pitch") {
+        Node node;
+        PitchSetPitch closestPitch = {"C5", 1.0};
+        
+        node.setClosestPitch(closestPitch);
+        
+        REQUIRE(node.getClosestPitch().label == "C5");
+        REQUIRE_THAT(node.getClosestPitch().log2fr, WithinAbs(1.0, 1e-10));
+        // Setting closest pitch doesn't affect isTempered status
+        REQUIRE(node.getIsTempered() == false);
+    }
+    
     SECTION("Clearing tempered pitch") {
         Node node;
         PitchSetPitch temperedPitch = {"A4", 0.75};
@@ -92,6 +106,7 @@ TEST_CASE("Node tempering functionality", "[node]") {
         node.clearTempered();
         REQUIRE(node.getIsTempered() == false);
         REQUIRE(node.getTemperedPitch().label.empty());
+        REQUIRE(node.getClosestPitch().label.empty());
     }
 }
 
@@ -139,6 +154,41 @@ TEST_CASE("Node deviation label functionality", "[node]") {
         std::string label = node.deviationLabel(0.1, true);
         REQUIRE(label == "C");
     }
+    
+    SECTION("Deviation from closest pitch") {
+        Node node;
+        node.setTuningCoord({0.52, 0.0}); // 24 cents sharp
+        node.setClosestPitch({"D", 0.5});
+        
+        // Test deviation from closest pitch
+        std::string label = node.deviationLabel(0.1, false, scalatrix::DeviationReference::CLOSEST);
+        REQUIRE(label == "D+24.0ct");
+    }
+    
+    SECTION("Different tempered vs closest pitch") {
+        Node node;
+        node.setTuningCoord({0.51, 0.0}); // Actual pitch
+        node.setTemperedPitch({"C", 0.5});    // Tempered to C
+        node.setClosestPitch({"C#", 0.52});   // But closest is C#
+        
+        // Deviation from tempered pitch (default)
+        std::string temperedLabel = node.deviationLabel(0.1, false, scalatrix::DeviationReference::TEMPERED);
+        REQUIRE(temperedLabel == "C+12.0ct");
+        
+        // Deviation from closest pitch
+        std::string closestLabel = node.deviationLabel(0.1, false, scalatrix::DeviationReference::CLOSEST);
+        REQUIRE(closestLabel == "C#-12.0ct");
+    }
+    
+    SECTION("No closest pitch returns empty string") {
+        Node node;
+        node.setTuningCoord({0.5, 0.0});
+        node.setTemperedPitch({"C", 0.5});
+        // No closest pitch set
+        
+        std::string label = node.deviationLabel(0.1, false, scalatrix::DeviationReference::CLOSEST);
+        REQUIRE(label.empty());
+    }
 }
 
 TEST_CASE("Node comparison operators", "[node]") {
@@ -168,6 +218,7 @@ TEST_CASE("Node copy and assignment", "[node]") {
         original.setTuningCoord({0.5, 0.3});
         original.setPitch(440.0);
         original.setTemperedPitch({"A4", 0.75});
+        original.setClosestPitch({"G#", 0.74});
         
         Node copy(original);
         
@@ -178,6 +229,7 @@ TEST_CASE("Node copy and assignment", "[node]") {
         REQUIRE_THAT(copy.getPitch(), WithinAbs(440.0, 1e-10));
         REQUIRE(copy.getIsTempered() == true);
         REQUIRE(copy.getTemperedPitch().label == "A4");
+        REQUIRE(copy.getClosestPitch().label == "G#");
     }
     
     SECTION("Assignment operator") {
@@ -186,6 +238,7 @@ TEST_CASE("Node copy and assignment", "[node]") {
         original.setTuningCoord({0.5, 0.3});
         original.setPitch(440.0);
         original.setTemperedPitch({"A4", 0.75});
+        original.setClosestPitch({"G#", 0.74});
         
         assigned = original;
         
@@ -196,5 +249,6 @@ TEST_CASE("Node copy and assignment", "[node]") {
         REQUIRE_THAT(assigned.getPitch(), WithinAbs(440.0, 1e-10));
         REQUIRE(assigned.getIsTempered() == true);
         REQUIRE(assigned.getTemperedPitch().label == "A4");
+        REQUIRE(assigned.getClosestPitch().label == "G#");
     }
 }

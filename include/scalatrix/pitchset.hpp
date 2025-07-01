@@ -23,7 +23,7 @@ typedef struct {
 typedef std::vector<PitchSetPitch> PitchSet;
 PitchSet generateETPitchSet(unsigned int n_et, double equave_log2fr = 1.0);
 PitchSet generateJIPitchSet(PrimeList primes, int max_numtimesden = 20, double min_log2fr = 0.0, double max_log2fr = 1.0);
-PitchSet generateHarmonicSeriesPitchSet(PrimeList primes, int base, double max_log2fr = 1.001);
+PitchSet generateHarmonicSeriesPitchSet(PrimeList primes, int base, double min_log2fr = 0.0, double max_log2fr = 1.001);
 
 
 }; // namespace scalatrix
