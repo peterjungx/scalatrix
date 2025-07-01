@@ -120,7 +120,11 @@ PitchSet generateHarmonicSeriesPitchSet(PrimeList primes, int base, double min_l
     
     for (int num = min_num; num <= max_num; num++) {
         PitchSetPitch pitch;
-        pitch.label = std::to_string(num) + ":" + std::to_string(base);
+        // Simplify the fraction by dividing by GCD
+        int gcd = std::gcd(num, base);
+        int simplified_num = num / gcd;
+        int simplified_base = base / gcd;
+        pitch.label = std::to_string(simplified_num) + ":" + std::to_string(simplified_base);
         pitch.log2fr = -base_log2fr;
         int r = num;
         for (auto p : primes) {

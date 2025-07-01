@@ -241,23 +241,23 @@ TEST_CASE("Harmonic series pitch set generation", "[pitchset]") {
         }
         REQUIRE(hasSubharmonic);
         
-        // Should include the base (8:8 = 1:1)
+        // Should include the base (8:8 = 1:1, now simplified)
         bool hasUnison = false;
         for (const auto& pitch : hsPitchSet) {
             if (std::abs(pitch.log2fr) < 1e-6) {
                 hasUnison = true;
-                REQUIRE(pitch.label == "8:8");
+                REQUIRE(pitch.label == "1:1");
                 break;
             }
         }
         REQUIRE(hasUnison);
         
-        // Should include higher harmonics
+        // Should include higher harmonics (16:8 = 2:1, now simplified)
         bool hasHigherHarmonic = false;
         for (const auto& pitch : hsPitchSet) {
             if (std::abs(pitch.log2fr - 1.0) < 1e-6) {
                 hasHigherHarmonic = true;
-                REQUIRE(pitch.label == "16:8");
+                REQUIRE(pitch.label == "2:1");
                 break;
             }
         }
