@@ -376,6 +376,139 @@ TEST_CASE("PitchSetPitch addition operator", "[pitchset]") {
     }
 }
 
+TEST_CASE("PitchSetPitch multiplication operator", "[pitchset]") {
+    SECTION("Multiplying ratio by positive integer") {
+        PitchSetPitch pitch = {"3:2", std::log2(3.0/2.0)};
+        
+        PitchSetPitch result = 2 * pitch;
+        
+        // log2fr should be multiplied
+        REQUIRE_THAT(result.log2fr, WithinAbs(2.0 * std::log2(3.0/2.0), 1e-10));
+        
+        // Label should be power: 3^2 : 2^2 = 9:4
+        REQUIRE(result.label == "9:4");
+    }
+    
+    SECTION("Multiplying ratio by zero") {
+        PitchSetPitch pitch = {"3:2", std::log2(3.0/2.0)};
+        
+        PitchSetPitch result = 0 * pitch;
+        
+        // log2fr should be 0
+        REQUIRE_THAT(result.log2fr, WithinAbs(0.0, 1e-10));
+        
+        // Label should be 1:1 (3^0 : 2^0)
+        REQUIRE(result.label == "1:1");
+    }
+    
+    SECTION("Multiplying ratio by negative integer") {
+        PitchSetPitch pitch = {"3:2", std::log2(3.0/2.0)};
+        
+        PitchSetPitch result = -1 * pitch;
+        
+        // log2fr should be negated
+        REQUIRE_THAT(result.log2fr, WithinAbs(-std::log2(3.0/2.0), 1e-10));
+        
+        // Label should be inverted: 2:3
+        REQUIRE(result.label == "2:3");
+    }
+    
+    SECTION("Multiplying ET by positive integer") {
+        PitchSetPitch pitch = {"3\\11", 3.0/11.0};
+        
+        PitchSetPitch result = 2 * pitch;
+        
+        // log2fr should be multiplied
+        REQUIRE_THAT(result.log2fr, WithinAbs(2.0 * 3.0/11.0, 1e-10));
+        
+        // Label should multiply numerator: 6\\11
+        REQUIRE(result.label == "6\\11");
+    }
+    
+    SECTION("Multiplying ET by zero") {
+        PitchSetPitch pitch = {"3\\11", 3.0/11.0};
+        
+        PitchSetPitch result = 0 * pitch;
+        
+        // log2fr should be 0
+        REQUIRE_THAT(result.log2fr, WithinAbs(0.0, 1e-10));
+        
+        // Label should be 0\\11
+        REQUIRE(result.label == "0\\11");
+    }
+    
+    SECTION("Multiplying ET by negative integer") {
+        PitchSetPitch pitch = {"7\\12", 7.0/12.0};
+        
+        PitchSetPitch result = -1 * pitch;
+        
+        // log2fr should be negated
+        REQUIRE_THAT(result.log2fr, WithinAbs(-7.0/12.0, 1e-10));
+        
+        // Label should be negative: -7\\12
+        REQUIRE(result.label == "-7\\12");
+    }
+    
+    SECTION("Test user examples") {
+        // 2 * (3:2) = 9:4
+        PitchSetPitch pitch1 = {"3:2", std::log2(3.0/2.0)};
+        PitchSetPitch result1 = 2 * pitch1;
+        REQUIRE(result1.label == "9:4");
+        REQUIRE_THAT(result1.log2fr, WithinAbs(2.0 * std::log2(3.0/2.0), 1e-10));
+        
+        // -1 * (3:2) = 2:3
+        PitchSetPitch result2 = -1 * pitch1;
+        REQUIRE(result2.label == "2:3");
+        REQUIRE_THAT(result2.log2fr, WithinAbs(-std::log2(3.0/2.0), 1e-10));
+        
+        // 2 * (11\\14) = 22\\14
+        PitchSetPitch pitch3 = {"11\\14", 11.0/14.0};
+        PitchSetPitch result3 = 2 * pitch3;
+        REQUIRE(result3.label == "22\\14");
+        REQUIRE_THAT(result3.log2fr, WithinAbs(2.0 * 11.0/14.0, 1e-10));
+        
+        // 0 * (3\\11) = 0\\11
+        PitchSetPitch pitch4 = {"3\\11", 3.0/11.0};
+        PitchSetPitch result4 = 0 * pitch4;
+        REQUIRE(result4.label == "0\\11");
+        REQUIRE_THAT(result4.log2fr, WithinAbs(0.0, 1e-10));
+    }
+    
+    SECTION("Multiplication with GCD simplification") {
+        PitchSetPitch pitch = {"6:4", std::log2(6.0/4.0)};
+        
+        PitchSetPitch result = 2 * pitch;
+        
+        // 6^2 : 4^2 = 36:16 = 9:4 (after GCD)
+        REQUIRE(result.label == "9:4");
+        REQUIRE_THAT(result.log2fr, WithinAbs(2.0 * std::log2(6.0/4.0), 1e-10));
+    }
+    
+    SECTION("Commutative property") {
+        PitchSetPitch pitch = {"5:3", std::log2(5.0/3.0)};
+        
+        PitchSetPitch result1 = 3 * pitch;
+        PitchSetPitch result2 = pitch * 3;
+        
+        // Both should give same result
+        REQUIRE(result1.label == result2.label);
+        REQUIRE_THAT(result1.log2fr, WithinAbs(result2.log2fr, 1e-10));
+        REQUIRE(result1.label == "125:27");
+    }
+    
+    SECTION("Multiplying malformed labels") {
+        PitchSetPitch pitch = {"invalid", 0.5};
+        
+        PitchSetPitch result = 2 * pitch;
+        
+        // log2fr should still be multiplied
+        REQUIRE_THAT(result.log2fr, WithinAbs(1.0, 1e-10));
+        
+        // Label should be empty (malformed input)
+        REQUIRE(result.label == "");
+    }
+}
+
 TEST_CASE("Pitch set integration", "[pitchset]") {
     SECTION("Different pitch sets have different characteristics") {
         auto etPitchSet = generateETPitchSet(12, 1.0);

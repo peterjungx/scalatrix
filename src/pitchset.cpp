@@ -210,5 +210,97 @@ PitchSetPitch operator+(const PitchSetPitch& a, const PitchSetPitch& b) {
     return result;
 }
 
+PitchSetPitch operator*(int multiplier, const PitchSetPitch& pitch) {
+    return pitch * multiplier;
+}
+
+PitchSetPitch operator*(const PitchSetPitch& pitch, int multiplier) {
+    PitchSetPitch result;
+    result.log2fr = multiplier * pitch.log2fr;
+    
+    // Parse label formats
+    auto parseRatio = [](const std::string& label) -> std::pair<bool, std::pair<int, int>> {
+        size_t colonPos = label.find(':');
+        if (colonPos != std::string::npos) {
+            try {
+                int num = std::stoi(label.substr(0, colonPos));
+                int den = std::stoi(label.substr(colonPos + 1));
+                return {true, {num, den}};
+            } catch (...) {
+                return {false, {0, 0}};
+            }
+        }
+        return {false, {0, 0}};
+    };
+    
+    auto parseET = [](const std::string& label) -> std::pair<bool, std::pair<int, int>> {
+        size_t backslashPos = label.find('\\');
+        if (backslashPos != std::string::npos) {
+            try {
+                int num = std::stoi(label.substr(0, backslashPos));
+                int den = std::stoi(label.substr(backslashPos + 1));
+                return {true, {num, den}};
+            } catch (...) {
+                return {false, {0, 0}};
+            }
+        }
+        return {false, {0, 0}};
+    };
+    
+    auto [isRatio, ratio] = parseRatio(pitch.label);
+    auto [isET, et] = parseET(pitch.label);
+    
+    if (isRatio) {
+        // For ratios: integer is the power
+        // multiplier * (num:den) = num^multiplier : den^multiplier
+        if (multiplier >= 0) {
+            long long newNum = 1;
+            long long newDen = 1;
+            
+            // Calculate num^multiplier and den^multiplier
+            for (int i = 0; i < multiplier; i++) {
+                newNum *= ratio.first;
+                newDen *= ratio.second;
+            }
+            
+            // Simplify with GCD
+            long long gcd = std::gcd(newNum, newDen);
+            newNum /= gcd;
+            newDen /= gcd;
+            
+            result.label = std::to_string(newNum) + ":" + std::to_string(newDen);
+        } else {
+            // Negative multiplier: invert and raise to positive power
+            int posMultiplier = -multiplier;
+            long long newNum = 1;
+            long long newDen = 1;
+            
+            // Calculate den^|multiplier| : num^|multiplier| (inverted)
+            for (int i = 0; i < posMultiplier; i++) {
+                newNum *= ratio.second;  // denominator becomes numerator
+                newDen *= ratio.first;   // numerator becomes denominator
+            }
+            
+            // Simplify with GCD
+            long long gcd = std::gcd(newNum, newDen);
+            newNum /= gcd;
+            newDen /= gcd;
+            
+            result.label = std::to_string(newNum) + ":" + std::to_string(newDen);
+        }
+    } else if (isET) {
+        // For ET: multiply the numerator
+        // multiplier * (num\\den) = (multiplier * num)\\den
+        int newNum = multiplier * et.first;
+        int den = et.second;
+        result.label = std::to_string(newNum) + "\\" + std::to_string(den);
+    } else {
+        // Unknown format - return empty label
+        result.label = "";
+    }
+    
+    return result;
+}
+
 
 };

@@ -23,6 +23,10 @@ typedef struct {
 
 // Addition operator for PitchSetPitch
 PitchSetPitch operator+(const PitchSetPitch& a, const PitchSetPitch& b);
+
+// Multiplication operator for PitchSetPitch by integer
+PitchSetPitch operator*(int multiplier, const PitchSetPitch& pitch);
+PitchSetPitch operator*(const PitchSetPitch& pitch, int multiplier);
 typedef std::vector<PitchSetPitch> PitchSet;
 PitchSet generateETPitchSet(unsigned int n_et, double equave_log2fr = 1.0, double min_log2fr = 0.0, double max_log2fr = 1.0);
 PitchSet generateJIPitchSet(PrimeList primes, int max_numtimesden = 20, double min_log2fr = 0.0, double max_log2fr = 1.0);
