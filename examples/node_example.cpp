@@ -1,4 +1,5 @@
 #include <scalatrix/node.hpp>
+#include <scalatrix/label_calculator.hpp>
 #include <iostream>
 
 using namespace scalatrix;
@@ -26,11 +27,11 @@ int main() {
     std::cout << std::endl;
     
     // Show deviation from tempered pitch (default behavior)
-    std::string temperedLabel = node.deviationLabel(0.1, false, DeviationReference::TEMPERED);
+    std::string temperedLabel = LabelCalculator::deviationLabel(node, 0.1, false, DeviationReference::TEMPERED);
     std::cout << "Deviation from tempered pitch: " << temperedLabel << std::endl;
     
     // Show deviation from closest pitch
-    std::string closestLabel = node.deviationLabel(0.1, false, DeviationReference::CLOSEST);
+    std::string closestLabel = LabelCalculator::deviationLabel(node, 0.1, false, DeviationReference::CLOSEST);
     std::cout << "Deviation from closest pitch: " << closestLabel << std::endl;
     
     std::cout << std::endl;

@@ -1,6 +1,7 @@
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
 #include "scalatrix/node.hpp"
+#include "scalatrix/label_calculator.hpp"
 
 using namespace scalatrix;
 using Catch::Matchers::WithinAbs;
@@ -13,11 +14,11 @@ TEST_CASE("Node deviation label functionality", "[node]") {
         node.closestPitch = {"C#", 0.52};   // But closest is C#
         
         // Deviation from tempered pitch (default)
-        std::string temperedLabel = node.deviationLabel(0.1, false, DeviationReference::TEMPERED);
+        std::string temperedLabel = LabelCalculator::deviationLabel(node, 0.1, false, DeviationReference::TEMPERED);
         REQUIRE(temperedLabel == "C+12.0ct");
         
         // Deviation from closest pitch
-        std::string closestLabel = node.deviationLabel(0.1, false, DeviationReference::CLOSEST);
+        std::string closestLabel = LabelCalculator::deviationLabel(node, 0.1, false, DeviationReference::CLOSEST);
         REQUIRE(closestLabel == "C#-12.0ct");
     }
     
@@ -25,7 +26,7 @@ TEST_CASE("Node deviation label functionality", "[node]") {
         Node node;
         node.tuning_coord = {0.5, 0.0};
         
-        REQUIRE(node.deviationLabel().empty());
-        REQUIRE(node.deviationLabel(0.1, false, DeviationReference::CLOSEST).empty());
+        REQUIRE(LabelCalculator::deviationLabel(node).empty());
+        REQUIRE(LabelCalculator::deviationLabel(node, 0.1, false, DeviationReference::CLOSEST).empty());
     }
 }

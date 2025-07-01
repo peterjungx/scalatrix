@@ -30,6 +30,8 @@ set(SCALATRIX_SOURCES
     ${CMAKE_SOURCE_DIR}/../src/mos.cpp
     ${CMAKE_SOURCE_DIR}/../src/pitchset.cpp
     ${CMAKE_SOURCE_DIR}/../src/lattice.cpp
+    ${CMAKE_SOURCE_DIR}/../src/label_calculator.cpp
+    ${CMAKE_SOURCE_DIR}/../src/node.cpp
 )
 
 # Test executables

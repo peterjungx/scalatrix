@@ -1,5 +1,6 @@
 #include "scalatrix/mos.hpp"
 #include "scalatrix/params.hpp" 
+#include "scalatrix/label_calculator.hpp"
 
 #include <cmath>
 #include <vector>
@@ -234,45 +235,6 @@ AffineTransform MOS::calcImpliedAffine() const {
     );
 };
 
-std::string MOS::accidentalString(Vector2i v, bool swap) const{
-    
-    int acc = floor( ((swap?-1:1)* (v.y * a0 - v.x * b0) - 2.0) / n0 + 1);
-    if (L_vec.x == 1){
-        acc *= -1;
-    }
-    std::string result = "";
-    if (acc != 0) {
-        while (acc < 0) {
-            acc += 1;
-            result += "\u266D"; // U+266D ♭
-        }
-        while (acc > 0) {
-            acc -= 1;
-            result += "\u266F"; // U+266F ♯
-        }
-    }
-    return result;
-}
-
-std::string MOS::nodeLabelDigit(Vector2i v) const{
-    int dia = (v.x + v.y + 128*n) % n;
-    std::string result = std::to_string(dia+1);
-    result = accidentalString(v) + result;
-    return result;
-};
-std::string MOS::nodeLabelLetter(Vector2i v) const{
-    int dia = (v.x + v.y + 2 + 128*n) % n;
-    char letter = 'A' + dia;
-    std::string result(1, letter);
-    result = accidentalString(v) + result;
-    return result;
-};
-std::string MOS::nodeLabelLetterWithOctaveNumber(Vector2i v, int middle_C_octave) const{
-    std::string result = nodeLabelLetter(v);
-    int octave = middle_C_octave + floor((.0 + v.x + v.y) / n);
-    result += std::to_string(octave);
-    return result;
-};
 
 
 
@@ -369,5 +331,17 @@ bool MOS::nodeInScale(Vector2i v) const{
     return true;
 }
 
-} // namespace scalatrix
+// Deprecated methods - forwarding to LabelCalculator
+std::string MOS::nodeLabelDigit(Vector2i v) const {
+    return LabelCalculator::nodeLabelDigit(*this, v);
+}
 
+std::string MOS::nodeLabelLetter(Vector2i v) const {
+    return LabelCalculator::nodeLabelLetter(*this, v);
+}
+
+std::string MOS::nodeLabelLetterWithOctaveNumber(Vector2i v, int middle_C_octave) const {
+    return LabelCalculator::nodeLabelLetterWithOctaveNumber(*this, v, middle_C_octave);
+}
+
+} // namespace scalatrix

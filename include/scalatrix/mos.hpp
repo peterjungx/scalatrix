@@ -43,7 +43,8 @@ public:
 
     double gFromAngle(double angle);
 
-    std::string accidentalString(Vector2i v, bool swap=false) const;
+    // Deprecated: Label methods - use LabelCalculator instead
+    // These are kept for backward compatibility
     std::string nodeLabelDigit(Vector2i v) const;
     std::string nodeLabelLetter(Vector2i v) const;
     std::string nodeLabelLetterWithOctaveNumber(Vector2i v, int middle_C_octave=4) const;

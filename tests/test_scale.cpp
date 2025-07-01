@@ -2,6 +2,7 @@
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
 #include "scalatrix/scale.hpp"
 #include "scalatrix/params.hpp"
+#include "scalatrix/label_calculator.hpp"
 #include <cmath>
 
 using namespace scalatrix;
@@ -64,37 +65,37 @@ TEST_CASE("Node deviation label", "[scale][node]") {
     node.temperedPitch.log2fr = 0.0;
     
     SECTION("No deviation shows plain label") {
-        std::string label = node.deviationLabel(0.1, false);
+        std::string label = LabelCalculator::deviationLabel(node, 0.1, false);
         REQUIRE(label == "C");
     }
     
     SECTION("Small positive deviation") {
         node.tuning_coord.x = 0.01; // 12 cents sharp
-        std::string label = node.deviationLabel(0.1, false);
+        std::string label = LabelCalculator::deviationLabel(node, 0.1, false);
         REQUIRE(label == "C+12.0ct");
     }
     
     SECTION("Small negative deviation") {
         node.tuning_coord.x = -0.005; // 6 cents flat
-        std::string label = node.deviationLabel(0.1, false);
+        std::string label = LabelCalculator::deviationLabel(node, 0.1, false);
         REQUIRE(label == "C-6.0ct");
     }
     
     SECTION("Deviation below threshold shows plain label") {
         node.tuning_coord.x = 0.00005; // 0.06 cents sharp
-        std::string label = node.deviationLabel(0.1, false);
+        std::string label = LabelCalculator::deviationLabel(node, 0.1, false);
         REQUIRE(label == "C");
     }
     
     SECTION("Force exact label ignores deviation") {
         node.tuning_coord.x = 0.1; // 120 cents sharp
-        std::string label = node.deviationLabel(0.1, true);
+        std::string label = LabelCalculator::deviationLabel(node, 0.1, true);
         REQUIRE(label == "C");
     }
     
     SECTION("Empty tempered pitch returns empty string") {
         node.temperedPitch.label = "";
-        std::string label = node.deviationLabel();
+        std::string label = LabelCalculator::deviationLabel(node);
         REQUIRE(label == "");
     }
 }
