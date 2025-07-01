@@ -154,7 +154,7 @@ void Scale::temperToPitchSet(PitchSet& pitchset){
                 closest_pitch = pitch;
             }
         }
-        node.tuning_coord.x = closest_pitch_log2fr;
+        //node.tuning_coord.x = closest_pitch_log2fr;
         node.pitch = base_freq_ * exp2(closest_pitch_log2fr);
         node.isTempered = true;
         node.temperedPitch = closest_pitch;
