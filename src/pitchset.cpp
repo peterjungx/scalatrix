@@ -1,5 +1,7 @@
 #include "scalatrix/pitchset.hpp"
 #include <numeric>
+#include <sstream>
+#include <algorithm>
 
 const int PRIMES[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
 
@@ -148,6 +150,65 @@ PitchSet generateHarmonicSeriesPitchSet(PrimeList primes, int base, double min_l
     );
     return pitchset;
 };
+
+PitchSetPitch operator+(const PitchSetPitch& a, const PitchSetPitch& b) {
+    PitchSetPitch result;
+    result.log2fr = a.log2fr + b.log2fr;
+    
+    // Parse label formats
+    auto parseRatio = [](const std::string& label) -> std::pair<bool, std::pair<int, int>> {
+        size_t colonPos = label.find(':');
+        if (colonPos != std::string::npos) {
+            try {
+                int num = std::stoi(label.substr(0, colonPos));
+                int den = std::stoi(label.substr(colonPos + 1));
+                return {true, {num, den}};
+            } catch (...) {
+                return {false, {0, 0}};
+            }
+        }
+        return {false, {0, 0}};
+    };
+    
+    auto parseET = [](const std::string& label) -> std::pair<bool, std::pair<int, int>> {
+        size_t backslashPos = label.find('\\');
+        if (backslashPos != std::string::npos) {
+            try {
+                int num = std::stoi(label.substr(0, backslashPos));
+                int den = std::stoi(label.substr(backslashPos + 1));
+                return {true, {num, den}};
+            } catch (...) {
+                return {false, {0, 0}};
+            }
+        }
+        return {false, {0, 0}};
+    };
+    
+    auto [isRatioA, ratioA] = parseRatio(a.label);
+    auto [isRatioB, ratioB] = parseRatio(b.label);
+    auto [isETA, etA] = parseET(a.label);
+    auto [isETB, etB] = parseET(b.label);
+    
+    if (isRatioA && isRatioB) {
+        // Both are ratios: multiply fractions and simplify
+        int newNum = ratioA.first * ratioB.first;
+        int newDen = ratioA.second * ratioB.second;
+        int gcd = std::gcd(newNum, newDen);
+        newNum /= gcd;
+        newDen /= gcd;
+        result.label = std::to_string(newNum) + ":" + std::to_string(newDen);
+    } else if (isETA && isETB && etA.second == etB.second) {
+        // Both are ET fractions with same denominator: add numerators
+        int newNum = etA.first + etB.first;
+        int den = etA.second;
+        result.label = std::to_string(newNum) + "\\" + std::to_string(den);
+    } else {
+        // Incompatible formats or different denominators - return empty label
+        result.label = "";
+    }
+    
+    return result;
+}
 
 
 };

@@ -20,6 +20,9 @@ typedef struct {
     std::string label;
     double log2fr; // log2 frequency ratio
 } PitchSetPitch;
+
+// Addition operator for PitchSetPitch
+PitchSetPitch operator+(const PitchSetPitch& a, const PitchSetPitch& b);
 typedef std::vector<PitchSetPitch> PitchSet;
 PitchSet generateETPitchSet(unsigned int n_et, double equave_log2fr = 1.0, double min_log2fr = 0.0, double max_log2fr = 1.0);
 PitchSet generateJIPitchSet(PrimeList primes, int max_numtimesden = 20, double min_log2fr = 0.0, double max_log2fr = 1.0);

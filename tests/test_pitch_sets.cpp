@@ -270,6 +270,112 @@ TEST_CASE("Harmonic series pitch set generation", "[pitchset]") {
     }
 }
 
+TEST_CASE("PitchSetPitch addition operator", "[pitchset]") {
+    SECTION("Adding two ratio pitches") {
+        PitchSetPitch a = {"3:2", std::log2(3.0/2.0)};
+        PitchSetPitch b = {"5:4", std::log2(5.0/4.0)};
+        
+        PitchSetPitch result = a + b;
+        
+        // log2fr should be sum of inputs
+        REQUIRE_THAT(result.log2fr, WithinAbs(std::log2(3.0/2.0) + std::log2(5.0/4.0), 1e-10));
+        
+        // Label should be simplified fraction: 3*5 : 2*4 = 15:8
+        REQUIRE(result.label == "15:8");
+    }
+    
+    SECTION("Adding ratio pitches that need GCD simplification") {
+        PitchSetPitch a = {"4:3", std::log2(4.0/3.0)};
+        PitchSetPitch b = {"6:4", std::log2(6.0/4.0)};
+        
+        PitchSetPitch result = a + b;
+        
+        // log2fr should be sum of inputs
+        REQUIRE_THAT(result.log2fr, WithinAbs(std::log2(4.0/3.0) + std::log2(6.0/4.0), 1e-10));
+        
+        // Label should be simplified: 4*6 : 3*4 = 24:12 = 2:1 (after GCD)
+        REQUIRE(result.label == "2:1");
+    }
+    
+    SECTION("Adding two ET pitches with same denominator") {
+        PitchSetPitch a = {"2\\12", 2.0/12.0};
+        PitchSetPitch b = {"4\\12", 4.0/12.0};
+        
+        PitchSetPitch result = a + b;
+        
+        // log2fr should be sum of inputs
+        REQUIRE_THAT(result.log2fr, WithinAbs(2.0/12.0 + 4.0/12.0, 1e-10));
+        
+        // Label should add numerators: 2+4 = 6
+        REQUIRE(result.label == "6\\12");
+    }
+    
+    SECTION("Adding ET pitches with different denominators fails") {
+        PitchSetPitch a = {"2\\12", 2.0/12.0};
+        PitchSetPitch b = {"3\\7", 3.0/7.0};
+        
+        PitchSetPitch result = a + b;
+        
+        // log2fr should still be sum
+        REQUIRE_THAT(result.log2fr, WithinAbs(2.0/12.0 + 3.0/7.0, 1e-10));
+        
+        // Label should be empty (incompatible)
+        REQUIRE(result.label == "");
+    }
+    
+    SECTION("Adding ratio and ET pitches fails") {
+        PitchSetPitch a = {"3:2", std::log2(3.0/2.0)};
+        PitchSetPitch b = {"4\\12", 4.0/12.0};
+        
+        PitchSetPitch result = a + b;
+        
+        // log2fr should still be sum
+        REQUIRE_THAT(result.log2fr, WithinAbs(std::log2(3.0/2.0) + 4.0/12.0, 1e-10));
+        
+        // Label should be empty (incompatible formats)
+        REQUIRE(result.label == "");
+    }
+    
+    SECTION("Adding negative ET pitches") {
+        PitchSetPitch a = {"-2\\12", -2.0/12.0};
+        PitchSetPitch b = {"4\\12", 4.0/12.0};
+        
+        PitchSetPitch result = a + b;
+        
+        // log2fr should be sum
+        REQUIRE_THAT(result.log2fr, WithinAbs(-2.0/12.0 + 4.0/12.0, 1e-10));
+        
+        // Label should add: -2+4 = 2
+        REQUIRE(result.label == "2\\12");
+    }
+    
+    SECTION("Test case from user example: 2\\11 + 4\\11 = 6\\11") {
+        PitchSetPitch a = {"2\\11", 2.0/11.0};
+        PitchSetPitch b = {"4\\11", 4.0/11.0};
+        
+        PitchSetPitch result = a + b;
+        
+        // log2fr should be sum
+        REQUIRE_THAT(result.log2fr, WithinAbs(2.0/11.0 + 4.0/11.0, 1e-10));
+        
+        // Label should be: 2+4 = 6
+        REQUIRE(result.label == "6\\11");
+    }
+    
+    SECTION("Adding malformed labels") {
+        PitchSetPitch a = {"invalid", 0.5};
+        PitchSetPitch b = {"3:2", std::log2(3.0/2.0)};
+        
+        PitchSetPitch result = a + b;
+        
+        // log2fr should still be sum
+        REQUIRE_THAT(result.log2fr, WithinAbs(0.5 + std::log2(3.0/2.0), 1e-10));
+        
+        // Label should be empty (malformed input)
+        REQUIRE(result.label == "");
+    }
+}
+
 TEST_CASE("Pitch set integration", "[pitchset]") {
     SECTION("Different pitch sets have different characteristics") {
         auto etPitchSet = generateETPitchSet(12, 1.0);
