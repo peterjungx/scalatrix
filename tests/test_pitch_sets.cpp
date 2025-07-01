@@ -47,6 +47,29 @@ TEST_CASE("ET pitch set generation", "[pitchset]") {
             REQUIRE_THAT(etPitchSet[i].log2fr, WithinAbs(expectedPitch, 1e-10));
         }
     }
+    
+    SECTION("ET pitch set with range limits") {
+        // Generate 12-TET with range from -1.0 to 2.0 (3 octaves)
+        auto etPitchSet = generateETPitchSet(12, 1.0, -1.0, 2.0);
+        
+        // Should include steps from -12 to 24 (37 pitches total)
+        REQUIRE(etPitchSet.size() == 37);
+        
+        // Check range boundaries
+        REQUIRE_THAT(etPitchSet[0].log2fr, WithinAbs(-1.0, 1e-10));
+        REQUIRE_THAT(etPitchSet[36].log2fr, WithinAbs(2.0, 1e-10));
+        
+        // Check that labels include negative numbers
+        REQUIRE(etPitchSet[0].label == "-12\\12");
+        REQUIRE(etPitchSet[12].label == "0\\12");  // Unison
+        REQUIRE(etPitchSet[24].label == "12\\12"); // Octave
+        REQUIRE(etPitchSet[36].label == "24\\12"); // Two octaves
+        
+        // Verify proper ordering
+        for (size_t i = 1; i < etPitchSet.size(); ++i) {
+            REQUIRE(etPitchSet[i].log2fr >= etPitchSet[i-1].log2fr);
+        }
+    }
 }
 
 TEST_CASE("Default prime list generation", "[pitchset]") {

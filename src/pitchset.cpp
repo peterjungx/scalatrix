@@ -26,14 +26,33 @@ PrimeList generateDefaultPrimeList(int n_primes) {
 };
 
 
-PitchSet generateETPitchSet(unsigned int n_et, double equave_log2fr) {
+PitchSet generateETPitchSet(unsigned int n_et, double equave_log2fr, double min_log2fr, double max_log2fr) {
     PitchSet pitchset;
-    for (int i = 0; i < n_et + 1; i++) {
+    
+    // Calculate the range of steps to generate
+    // For min_log2fr: step * equave_log2fr / n_et >= min_log2fr, so step >= min_log2fr * n_et / equave_log2fr
+    // For max_log2fr: step * equave_log2fr / n_et <= max_log2fr, so step <= max_log2fr * n_et / equave_log2fr
+    int min_step = (int)ceil(min_log2fr * n_et / equave_log2fr);
+    int max_step = (int)floor(max_log2fr * n_et / equave_log2fr);
+    
+    for (int i = min_step; i <= max_step; i++) {
         PitchSetPitch p;
         p.label = std::to_string(i) + "\\" + std::to_string(n_et);
         p.log2fr = i * equave_log2fr / n_et;
-        pitchset.push_back(p);
+        
+        // Filter to ensure the pitch is within the specified range
+        if (p.log2fr >= min_log2fr - 1e-6 && p.log2fr <= max_log2fr + 1e-6) {
+            pitchset.push_back(p);
+        }
     }
+    
+    // Sort by log2fr (should already be sorted, but ensure it)
+    std::sort(pitchset.begin(), pitchset.end(), 
+        [](const PitchSetPitch& a, const PitchSetPitch& b) {
+            return a.log2fr < b.log2fr;
+        }
+    );
+    
     return pitchset;
 };
 
