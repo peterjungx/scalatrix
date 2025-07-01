@@ -153,3 +153,87 @@ TEST_CASE("LabelCalculator deterministic behavior", "[labelcalculator]") {
         }
     }
 }
+
+TEST_CASE("LabelCalculator deviationLabel", "[labelcalculator]") {
+    SECTION("No closest pitch returns empty string") {
+        Node node;
+        node.tuning_coord.x = 0.5;
+        node.closestPitch = {"", 0.0}; // Empty label
+        
+        std::string result = LabelCalculator::deviationLabel(node, 0.1, false);
+        REQUIRE(result.empty());
+    }
+    
+    SECTION("Small deviation returns plain label") {
+        Node node;
+        node.tuning_coord.x = 0.5;
+        node.closestPitch = {"3:2", 0.5849625007}; // log2(3/2)
+        node.temperedPitch = {"3:2", 0.5849625007};
+        
+        // Deviation is about 1200 * (0.5 - 0.5849625007) = -101.955 cents
+        // With threshold 200 cents, should return plain label
+        std::string result = LabelCalculator::deviationLabel(node, 200.0, false);
+        REQUIRE(result == "3:2");
+    }
+    
+    SECTION("Large deviation returns label with cents") {
+        Node node;
+        node.tuning_coord.x = 0.5;
+        node.closestPitch = {"3:2", 0.5849625007}; // log2(3/2)
+        node.temperedPitch = {"3:2", 0.5849625007};
+        
+        // Deviation is about 1200 * (0.5 - 0.5849625007) = -101.955 cents
+        // With threshold 0.1 cents, should return label with deviation
+        std::string result = LabelCalculator::deviationLabel(node, 0.1, false);
+        REQUIRE(result.find("3:2") != std::string::npos);
+        REQUIRE(result.find("ct") != std::string::npos);
+        REQUIRE(result.find("-") != std::string::npos); // Should show negative deviation
+    }
+    
+    SECTION("Positive deviation") {
+        Node node;
+        node.tuning_coord.x = 0.7;
+        node.closestPitch = {"3:2", 0.5849625007}; // log2(3/2)
+        node.temperedPitch = {"3:2", 0.5849625007};
+        
+        // Deviation is about 1200 * (0.7 - 0.5849625007) = +138.045 cents
+        std::string result = LabelCalculator::deviationLabel(node, 0.1, false);
+        REQUIRE(result.find("3:2") != std::string::npos);
+        REQUIRE(result.find("ct") != std::string::npos);
+        REQUIRE(result.find("+") != std::string::npos); // Should show positive deviation
+    }
+    
+    SECTION("Compare with tempered pitch") {
+        Node node;
+        node.tuning_coord.x = 0.5;
+        node.closestPitch = {"3:2", 0.5849625007}; // log2(3/2)
+        node.temperedPitch = {"3:2", 0.6}; // Slightly different tempered pitch
+        
+        // When compareWithTempered=true, should compare temperedPitch with closestPitch
+        // Deviation is about 1200 * (0.6 - 0.5849625007) = +18.045 cents
+        std::string result = LabelCalculator::deviationLabel(node, 0.1, true);
+        REQUIRE(result.find("3:2") != std::string::npos);
+        REQUIRE(result.find("ct") != std::string::npos);
+        REQUIRE(result.find("+") != std::string::npos);
+        
+        // When compareWithTempered=false, should compare tuning_coord with closestPitch
+        // Deviation is about 1200 * (0.5 - 0.5849625007) = -101.955 cents
+        std::string result2 = LabelCalculator::deviationLabel(node, 0.1, false);
+        REQUIRE(result2.find("3:2") != std::string::npos);
+        REQUIRE(result2.find("ct") != std::string::npos);
+        REQUIRE(result2.find("-") != std::string::npos);
+        
+        // Results should be different
+        REQUIRE(result != result2);
+    }
+    
+    SECTION("Exact match returns plain label") {
+        Node node;
+        node.tuning_coord.x = 0.5849625007; // Exactly log2(3/2)
+        node.closestPitch = {"3:2", 0.5849625007};
+        node.temperedPitch = {"3:2", 0.5849625007};
+        
+        std::string result = LabelCalculator::deviationLabel(node, 0.1, false);
+        REQUIRE(result == "3:2");
+    }
+}

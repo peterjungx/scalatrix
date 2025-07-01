@@ -44,10 +44,9 @@ std::string LabelCalculator::nodeLabelLetterWithOctaveNumber(const MOS& mos, Vec
 }
 
 std::string LabelCalculator::deviationLabel(const Node& node, double thresholdCents, 
-                                            bool forceExactLabel, DeviationReference reference) {
+                                            bool compareWithTempered) {
     // Select which pitch to use as reference
-    const PitchSetPitch& referencePitch = (reference == DeviationReference::TEMPERED) 
-                                          ? node.temperedPitch : node.closestPitch;
+    const PitchSetPitch& referencePitch = node.closestPitch;
     
     // If no reference pitch is set, return empty string
     if (referencePitch.label.empty()) {
@@ -55,13 +54,13 @@ std::string LabelCalculator::deviationLabel(const Node& node, double thresholdCe
     }
     
     // Calculate the actual pitch of this node
-    double actualPitchLog2fr = node.tuning_coord.x;
+    double actualPitchLog2fr = compareWithTempered ? node.temperedPitch.log2fr : node.tuning_coord.x;
     
     // Calculate deviation in cents
     double deviationCents = 1200.0 * (actualPitchLog2fr - referencePitch.log2fr);
     
-    // If deviation is small enough or exact label is forced, use plain label
-    if (std::abs(deviationCents) < thresholdCents || forceExactLabel) {
+    // If deviation is small enough, use plain label
+    if (std::abs(deviationCents) < thresholdCents) {
         return referencePitch.label;
     }
     

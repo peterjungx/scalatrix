@@ -8,14 +8,6 @@
 namespace scalatrix {
 
 /**
- * Enum to specify which pitch to use for deviation calculation
- */
-enum class DeviationReference {
-    TEMPERED,  // Calculate deviation from temperedPitch
-    CLOSEST    // Calculate deviation from closestPitch
-};
-
-/**
  * Node represents a single musical note in a scale with both lattice coordinates and pitch information.
  * Simple struct with public fields for direct access.
  */
@@ -37,10 +29,6 @@ struct Node {
     bool operator<(const Node& other) const noexcept {
         return tuning_coord.x < other.tuning_coord.x;
     }
-    
-    // Deprecated: Use LabelCalculator::deviationLabel instead
-    std::string deviationLabel(double thresholdCents = 0.1, bool forceExactLabel = false, 
-                               DeviationReference reference = DeviationReference::TEMPERED) const;
 };
 
 } // namespace scalatrix

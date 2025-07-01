@@ -7,26 +7,30 @@ using namespace scalatrix;
 using Catch::Matchers::WithinAbs;
 
 TEST_CASE("Node deviation label functionality", "[node]") {
-    SECTION("Different tempered vs closest pitch") {
+    SECTION("Compare tuning_coord vs tempered pitch with closest") {
         Node node;
-        node.tuning_coord = {0.51, 0.0}; // Actual pitch
-        node.temperedPitch = {"C", 0.5};    // Tempered to C
-        node.closestPitch = {"C#", 0.52};   // But closest is C#
+        node.tuning_coord = {0.51, 0.0}; // Actual pitch at tuning_coord
+        node.temperedPitch = {"C#", 0.5};    // Tempered pitch
+        node.closestPitch = {"C#", 0.52};   // Closest pitch in pitch set
         
-        // Deviation from tempered pitch (default)
-        std::string temperedLabel = LabelCalculator::deviationLabel(node, 0.1, false, DeviationReference::TEMPERED);
-        REQUIRE(temperedLabel == "C+12.0ct");
+        // Deviation from tuning_coord to closest (compareWithTempered=false)
+        // Deviation: 1200 * (0.51 - 0.52) = -12.0 cents
+        std::string tuningLabel = LabelCalculator::deviationLabel(node, 0.1, false);
+        REQUIRE(tuningLabel == "C#-12.0ct");
         
-        // Deviation from closest pitch
-        std::string closestLabel = LabelCalculator::deviationLabel(node, 0.1, false, DeviationReference::CLOSEST);
-        REQUIRE(closestLabel == "C#-12.0ct");
+        // Deviation from tempered pitch to closest (compareWithTempered=true)
+        // Deviation: 1200 * (0.5 - 0.52) = -24.0 cents
+        std::string temperedLabel = LabelCalculator::deviationLabel(node, 0.1, true);
+        REQUIRE(temperedLabel == "C#-24.0ct");
     }
     
     SECTION("Empty labels when no reference pitch") {
         Node node;
         node.tuning_coord = {0.5, 0.0};
+        node.closestPitch = {"", 0.0}; // Empty label
         
         REQUIRE(LabelCalculator::deviationLabel(node).empty());
-        REQUIRE(LabelCalculator::deviationLabel(node, 0.1, false, DeviationReference::CLOSEST).empty());
+        REQUIRE(LabelCalculator::deviationLabel(node, 0.1, false).empty());
+        REQUIRE(LabelCalculator::deviationLabel(node, 0.1, true).empty());
     }
 }

@@ -61,6 +61,8 @@ TEST_CASE("Scale::fromAffine generates correct scale", "[scale]") {
 TEST_CASE("Node deviation label", "[scale][node]") {
     Node node;
     node.tuning_coord.x = 0.0;
+    node.closestPitch.label = "C";
+    node.closestPitch.log2fr = 0.0;
     node.temperedPitch.label = "C";
     node.temperedPitch.log2fr = 0.0;
     
@@ -87,14 +89,21 @@ TEST_CASE("Node deviation label", "[scale][node]") {
         REQUIRE(label == "C");
     }
     
-    SECTION("Force exact label ignores deviation") {
-        node.tuning_coord.x = 0.1; // 120 cents sharp
-        std::string label = LabelCalculator::deviationLabel(node, 0.1, true);
-        REQUIRE(label == "C");
+    SECTION("Compare with tempered pitch vs tuning coordinate") {
+        node.tuning_coord.x = 0.1; // 120 cents from closest
+        node.temperedPitch.log2fr = 0.05; // 60 cents from closest
+        
+        // Compare tuning_coord with closest (compareWithTempered=false)
+        std::string tuningLabel = LabelCalculator::deviationLabel(node, 0.1, false);
+        REQUIRE(tuningLabel == "C+120.0ct");
+        
+        // Compare tempered pitch with closest (compareWithTempered=true)  
+        std::string temperedLabel = LabelCalculator::deviationLabel(node, 0.1, true);
+        REQUIRE(temperedLabel == "C+60.0ct");
     }
     
-    SECTION("Empty tempered pitch returns empty string") {
-        node.temperedPitch.label = "";
+    SECTION("Empty closest pitch returns empty string") {
+        node.closestPitch.label = "";
         std::string label = LabelCalculator::deviationLabel(node);
         REQUIRE(label == "");
     }

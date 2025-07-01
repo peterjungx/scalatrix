@@ -20,13 +20,11 @@ public:
      * 
      * @param node The node to generate label for
      * @param thresholdCents If deviation is less than this, show plain label (default 0.1)
-     * @param forceExactLabel If true, always show plain label without deviation
-     * @param reference Which pitch to use as reference: TEMPERED (default) or CLOSEST
+     * @param compareWithTempered If true, compare tempered pitch with closest; if false, compare tuning_coord with closest
      * @return String with format "label" or "label+/-XX.Xct" depending on deviation
      */
     static std::string deviationLabel(const Node& node, double thresholdCents = 0.1, 
-                                      bool forceExactLabel = false, 
-                                      DeviationReference reference = DeviationReference::TEMPERED);
+                                      bool compareWithTempered = false);
 
     std::string noteLabelNormalized(MOS& mos, Vector2i v) {
         if (mos.generator > 4.0/7 && mos.generator < 3.0/5 && mos.equave > 0.9 && mos.equave < 1.2)
