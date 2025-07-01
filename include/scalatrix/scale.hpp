@@ -6,6 +6,8 @@
 #include "pitchset.hpp"
 #include <string>
 #include <vector>
+#include <cstdio>
+#include <cmath>
 
 const double DEFAULT_12TET_C_PITCH = 261.6255653006;
 
@@ -26,6 +28,43 @@ struct Node {
         tuning_coord = other.tuning_coord;
         pitch = other.pitch;
         return *this;
+    }
+    
+    /**
+     * Generate a label showing the tempered pitch with optional deviation in cents.
+     * 
+     * @param thresholdCents If deviation is less than this, show plain label (default 0.1)
+     * @param forceExactLabel If true, always show plain label without deviation
+     * @return String with format "label" or "label+/-XX.Xct" depending on deviation
+     */
+    std::string deviationLabel(double thresholdCents = 0.1, bool forceExactLabel = false) const {
+        // If no temperedPitch is set, return empty string
+        if (temperedPitch.label.empty()) {
+            return "";
+        }
+        
+        // Calculate the actual pitch of this node
+        double actualPitchLog2fr = tuning_coord.x;
+        
+        // Calculate deviation in cents
+        double deviationCents = 1200.0 * (actualPitchLog2fr - temperedPitch.log2fr);
+        
+        // If deviation is small enough or exact label is forced, use plain label
+        if (std::abs(deviationCents) < thresholdCents || forceExactLabel) {
+            return temperedPitch.label;
+        }
+        
+        // Otherwise, append deviation
+        char deviationStr[32];
+        if (deviationCents > 0) {
+            std::snprintf(deviationStr, sizeof(deviationStr), "%s+%.1fct", 
+                         temperedPitch.label.c_str(), deviationCents);
+        } else {
+            std::snprintf(deviationStr, sizeof(deviationStr), "%s%.1fct", 
+                         temperedPitch.label.c_str(), deviationCents);
+        }
+        
+        return std::string(deviationStr);
     }
 };
 
