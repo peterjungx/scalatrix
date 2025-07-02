@@ -11,11 +11,13 @@ std::string LabelCalculator::accidentalString(const MOS& mos, Vector2i v, bool s
     if (acc != 0) {
         while (acc < 0) {
             acc += 1;
-            result += "\u266D"; // U+266D ♭
+            // Use direct UTF-8 byte sequences for better Windows compatibility
+            result += "\xe2\x99\xad"; // UTF-8 bytes for ♭ (U+266D)
         }
         while (acc > 0) {
             acc -= 1;
-            result += "\u266F"; // U+266F ♯
+            // Use direct UTF-8 byte sequences for better Windows compatibility
+            result += "\xe2\x99\xaf"; // UTF-8 bytes for ♯ (U+266F)
         }
     }
     return result;

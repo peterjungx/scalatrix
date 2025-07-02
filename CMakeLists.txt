@@ -5,6 +5,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Ensure proper UTF-8 handling on Windows
+if(WIN32)
+    add_compile_options(/utf-8)
+endif()
+
 # Source files
 set(SOURCES
     src/affine_transform.cpp
