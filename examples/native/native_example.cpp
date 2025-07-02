@@ -1,6 +1,10 @@
 #include <scalatrix.hpp>
 #include <iostream>
 
+#ifndef M_2_PI
+#define M_2_PI 0.63661977236758134308
+#endif
+
 using namespace scalatrix;
 
 int main() {
