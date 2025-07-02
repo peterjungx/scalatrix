@@ -1,6 +1,7 @@
 #include "scalatrix/lattice.hpp"
 #include <vector>
 #include <cassert>
+#include <cmath>
 
 namespace scalatrix {
 
