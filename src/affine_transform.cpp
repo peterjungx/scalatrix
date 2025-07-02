@@ -1,5 +1,6 @@
 #include "scalatrix/affine_transform.hpp"
 #include <cassert>
+#include <cmath>
 
 
 namespace scalatrix {
