@@ -48,7 +48,7 @@ public:
      * @param n_root Index of the root node in the generated scale
      * @return Scale object containing the generated path of nodes
      */
-    static Scale& fromAffine(const AffineTransform& M, const double base_freq, int N, int n_root);
+    static Scale fromAffine(const AffineTransform& M, const double base_freq, int N, int n_root);
 
     void print(int first = 58, int num = 5) const;
     std::vector<Node>& getNodes();

@@ -27,15 +27,10 @@ Scale::Scale(double base_freq, int N, int root_node_idx) : base_freq_(base_freq)
  * 4. The transform must be normalized so origin (0,0) maps to (x=0, 0≤y<1)
  */
 /*static*/ 
-Scale& Scale::fromAffine(const AffineTransform& A, const double base_freq, int N, int root_node_idx) {
-
-    static Scale _self;
-    _self.initNodes(N);
-    _self.base_freq_ = base_freq;
-    _self.root_idx_ = root_node_idx;
-
-    _self.recalcWithAffine(A, N, root_node_idx);
-    return _self;
+Scale Scale::fromAffine(const AffineTransform& A, const double base_freq, int N, int root_node_idx) {
+    Scale scale(base_freq, N, root_node_idx);
+    scale.recalcWithAffine(A, N, root_node_idx);
+    return scale;
 }
 
 /**
