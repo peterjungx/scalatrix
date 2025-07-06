@@ -21,6 +21,9 @@ struct Vector2i {
 
 };
 
+// Commutative scalar multiplication for Vector2i
+inline Vector2i operator*(int s, const Vector2i& v) { return {s * v.x, s * v.y}; }
+
 class IntegerAffineTransform {
 public:
     int a, b, c, d;  // 2x2 matrix
@@ -49,7 +52,11 @@ struct Vector2d {
     void operator-=(const Vector2d& v) { x -= v.x; y -= v.y; }
     Vector2d operator+(const Vector2d& v) { return {x + v.x, y + v.y}; }
     Vector2d operator-(const Vector2d& v) { return {x - v.x, y - v.y}; }
+    Vector2d operator*(double s) { return {x * s, y * s}; }
 };
+
+// Commutative scalar multiplication for Vector2d
+inline Vector2d operator*(double s, const Vector2d& v) { return {s * v.x, s * v.y}; }
 
 class AffineTransform {
 public:
