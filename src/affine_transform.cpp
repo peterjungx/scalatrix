@@ -28,7 +28,7 @@ IntegerAffineTransform IntegerAffineTransform::applyAffine(const IntegerAffineTr
 IntegerAffineTransform IntegerAffineTransform::inverse() const {
     int det = a * d - b * c;
     assert(det != 0);
-    return {d / det, -b / det, -c / det, a / det, (d * tx - b * ty) / det, (a * ty - c * tx) / det};
+    return {d / det, -b / det, -c / det, a / det, -(d * tx - b * ty) / det, -(a * ty - c * tx) / det};
 }
 
 IntegerAffineTransform& IntegerAffineTransform::linearFromTwoDots(
@@ -84,7 +84,7 @@ AffineTransform AffineTransform::applyAffine(const AffineTransform& M) const {
 AffineTransform AffineTransform::inverse() const {
     double det = a * d - b * c;
     assert(std::abs(det) > 1e-7);
-    return {d / det, -b / det, -c / det, a / det, (d * tx - b * ty) / det, (a * ty - c * tx) / det};
+    return {d / det, -b / det, -c / det, a / det, -(d * tx - b * ty) / det, -(a * ty - c * tx) / det};
 }
 
 
