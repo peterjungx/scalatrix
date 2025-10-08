@@ -3,27 +3,16 @@ declare namespace RuntimeExports {
     /**
      * @param {string|null=} returnType
      * @param {Array=} argTypes
-     * @param {Arguments|Array=} args
+     * @param {Array=} args
      * @param {Object=} opts
      */
-    function ccall(ident: any, returnType?: (string | null) | undefined, argTypes?: any[] | undefined, args?: (Arguments | any[]) | undefined, opts?: any | undefined): any;
+    function ccall(ident: any, returnType?: (string | null) | undefined, argTypes?: any[] | undefined, args?: any[] | undefined, opts?: any | undefined): any;
     /**
      * @param {string=} returnType
      * @param {Array=} argTypes
      * @param {Object=} opts
      */
     function cwrap(ident: any, returnType?: string | undefined, argTypes?: any[] | undefined, opts?: any | undefined): (...args: any[]) => any;
-    let HEAPF32: any;
-    let HEAPF64: any;
-    let HEAP_DATA_VIEW: any;
-    let HEAP8: any;
-    let HEAPU8: any;
-    let HEAP16: any;
-    let HEAPU16: any;
-    let HEAP32: any;
-    let HEAPU32: any;
-    let HEAP64: any;
-    let HEAPU64: any;
 }
 interface WasmModule {
   _main(_0: number, _1: number): number;
@@ -35,6 +24,8 @@ export interface ClassHandle {
   delete(): void;
   deleteLater(): this;
   isDeleted(): boolean;
+  // @ts-ignore - If targeting lower than ESNext, this symbol might not exist.
+  [Symbol.dispose](): void;
   clone(): this;
 }
 export interface IntegerAffineTransform extends ClassHandle {
@@ -100,7 +91,6 @@ export interface MOS extends ClassHandle {
   retuneZeroPoint(): void;
   generateScaleFromMOS(_0: number, _1: number, _2: number): Scale;
   retuneScaleWithMOS(_0: Scale, _1: number): void;
-  accidentalString(_0: Vector2i, _1: boolean): string;
   nodeLabelDigit(_0: Vector2i): string;
   nodeLabelLetter(_0: Vector2i): string;
   nodeLabelLetterWithOctaveNumber(_0: Vector2i, _1: number): string;
@@ -188,8 +178,8 @@ interface EmbindModule {
   PitchSet: {
     new(): PitchSet;
   };
-  generateHarmonicSeriesPitchSet(_0: PrimeList, _1: number, _2: number): PitchSet;
-  generateETPitchSet(_0: number, _1: number): PitchSet;
+  generateHarmonicSeriesPitchSet(_0: PrimeList, _1: number, _2: number, _3: number): PitchSet;
+  generateETPitchSet(_0: number, _1: number, _2: number, _3: number): PitchSet;
   generateJIPitchSet(_0: PrimeList, _1: number, _2: number, _3: number): PitchSet;
 }
 

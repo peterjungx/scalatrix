@@ -48,7 +48,6 @@ EMSCRIPTEN_BINDINGS(scalatrix) {
         .function("angle", &MOS::angle)
         .function("angleStd", &MOS::angleStd)
         .function("gFromAngle", &MOS::gFromAngle)
-        .function("accidentalString", &MOS::accidentalString)
         .function("nodeLabelDigit", &MOS::nodeLabelDigit)
         .function("nodeLabelLetter", &MOS::nodeLabelLetter)
         .function("nodeLabelLetterWithOctaveNumber", &MOS::nodeLabelLetterWithOctaveNumber)
