@@ -77,6 +77,10 @@ Vector2d AffineTransform::apply(const Vector2d& v) const {
     return {a * v.x + b * v.y + tx, c * v.x + d * v.y + ty};
 }
 
+//Vector2d AffineTransform::applyInt(const Vector2i& v) const {
+//    return {a * v.x + b * v.y + tx, c * v.x + d * v.y + ty};
+//}
+
 AffineTransform AffineTransform::applyAffine(const AffineTransform& M) const {
     return {a * M.a + b * M.c, a * M.b + b * M.d, c * M.a + d * M.c, c * M.b + d * M.d, a * M.tx + b * M.ty + tx, c * M.tx + d * M.ty + ty};
 }

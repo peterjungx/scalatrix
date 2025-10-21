@@ -10,6 +10,10 @@ PYBIND11_MODULE(scalatrix, m) {
         .def(py::init<double, double>())
         .def_readwrite("x", &Vector2d::x)
         .def_readwrite("y", &Vector2d::y)
+        .def("__add__", [](Vector2d a, const Vector2d& b) { return a + b; })
+        .def("__sub__", [](Vector2d a, const Vector2d& b) { return a - b; })
+        .def("__mul__", [](Vector2d a, double s) { return a * s; })
+        .def("__rmul__", [](double s, const Vector2d& a) { return s * a; })
         .def("__repr__", [](const Vector2d &v) {
             return "(" + std::to_string(v.x) + ", " + std::to_string(v.y) + ")";
         });
@@ -18,7 +22,13 @@ PYBIND11_MODULE(scalatrix, m) {
     py::class_<Vector2i>(m, "Vector2i")
         .def(py::init<int, int>())
         .def_readwrite("x", &Vector2i::x)
-        .def_readwrite("y", &Vector2i::y).def("__repr__", [](const Vector2d &v) {
+        .def_readwrite("y", &Vector2i::y)
+        .def("__eq__", [](const Vector2i& a, const Vector2i& b) { return a == b; })
+        .def("__add__", [](Vector2i a, const Vector2i& b) { return a + b; })
+        .def("__sub__", [](Vector2i a, const Vector2i& b) { return a - b; })
+        .def("__mul__", [](Vector2i a, int s) { return a * s; })
+        .def("__rmul__", [](int s, const Vector2i& a) { return s * a; })
+        .def("__repr__", [](const Vector2i &v) {
             return "(" + std::to_string(v.x) + ", " + std::to_string(v.y) + ")";
         });
 
@@ -39,6 +49,26 @@ PYBIND11_MODULE(scalatrix, m) {
         });
 
 
+    py::class_<IntegerAffineTransform>(m, "IntegerAffineTransform")
+        .def(py::init<int, int, int, int, int, int>())
+        .def_readwrite("a", &IntegerAffineTransform::a)
+        .def_readwrite("b", &IntegerAffineTransform::b)
+        .def_readwrite("c", &IntegerAffineTransform::c)
+        .def_readwrite("d", &IntegerAffineTransform::d)
+        .def_readwrite("tx", &IntegerAffineTransform::tx)
+        .def_readwrite("ty", &IntegerAffineTransform::ty)
+        .def("apply", &IntegerAffineTransform::apply)
+        .def("inverse", &IntegerAffineTransform::inverse)
+        .def("__mul__", [](const IntegerAffineTransform &a, const Vector2i &b) {
+            return a.apply(b);
+        }, py::is_operator())
+        .def("__repr__", [](const IntegerAffineTransform &t) {
+            return "IntegerAffineTransform(a=" + std::to_string(t.a) + ", b=" + std::to_string(t.b) +
+                   ", c=" + std::to_string(t.c) + ", d=" + std::to_string(t.d) +
+                   ", tx=" + std::to_string(t.tx) + ", ty=" + std::to_string(t.ty) + ")";
+        })
+        .def_static("linearFromTwoDots", &IntegerAffineTransform::linearFromTwoDots);
+
     py::class_<AffineTransform>(m, "AffineTransform")
         .def(py::init<double, double, double, double, double, double>())
         .def_readwrite("a", &AffineTransform::a)
@@ -51,7 +81,15 @@ PYBIND11_MODULE(scalatrix, m) {
         .def("inverse", &AffineTransform::inverse)
         .def("__mul__", [](const AffineTransform &a, const Vector2d &b) {
             return a.apply(b);
-        }, py::is_operator());
+        }, py::is_operator())
+        .def("applyToVector2i", [](const AffineTransform &a, const Vector2i &b) {
+            return a * b;
+        })
+        .def("__repr__", [](const AffineTransform &t) {
+            return "AffineTransform(a=" + std::to_string(t.a) + ", b=" + std::to_string(t.b) +
+                   ", c=" + std::to_string(t.c) + ", d=" + std::to_string(t.d) +
+                   ", tx=" + std::to_string(t.tx) + ", ty=" + std::to_string(t.ty) + ")";
+        });
 
     py::class_<Scale>(m, "Scale")
         .def(py::init<double>())
@@ -95,7 +133,6 @@ PYBIND11_MODULE(scalatrix, m) {
         .def("angleStd", &MOS::angleStd)
         .def("calcImpliedAffine", &MOS::calcImpliedAffine)
         .def("gFromAngle", &MOS::gFromAngle)
-        .def("accidentalString", &MOS::accidentalString)
         .def("nodeLabelDigit", &MOS::nodeLabelDigit)
         .def("nodeLabelLetter", &MOS::nodeLabelLetter)
         .def("nodeLabelLetterWithOctaveNumber", &MOS::nodeLabelLetterWithOctaveNumber)

@@ -27,9 +27,14 @@ Makefile
 *.sublime-workspace
 .DS_Store
 
-# Pyenv 
+# Pyenv
 .python-version
 
-# Remove example executables  
+# Python virtual environments
+venv/
+env/
+ENV/
+
+# Remove example executables
 examples/native/native_example
 scalatrix_example

@@ -12,7 +12,9 @@ Examples for native CLI and Wasm browser visualization.
 - CMake (>= 3.10)
 - Eigen3 (install via brew install eigen on macOS)
 - Emscripten (install via brew install emscripten on macOS, version 4.0.1 tested)
-- Python (for serving Wasm examples)
+- Python (for serving Wasm examples and building Python bindings)
+- pybind11 (install via pip install pybind11)
+- scikit-build-core (install via pip install scikit-build-core)
 
 ## Directory Structure
 
@@ -45,6 +47,21 @@ This creates:
 - `build/scalatrix_example` - Native example executable
 
 **Important**: All build artifacts are contained in the `build/` directory. Do not run CMake or make directly in the project root.
+
+### Python Bindings
+
+To build and install the Python bindings locally:
+
+```bash
+# Create and activate a virtual environment (recommended)
+python3 -m venv venv
+source venv/bin/activate
+
+# Install the package in editable mode
+pip install -e .
+```
+
+This will build the C++ extension and make the `scalatrix` module available in Python.
 
 ### Alternative Build Options
 
@@ -91,6 +108,48 @@ View:
 Open http://localhost:8000/wasm_example.html in a browser.
 
 Displays a canvas with 128 scale nodes as blue dots.
+
+### Python Example
+
+After installing the Python bindings, you can run the Python examples:
+
+```bash
+source venv/bin/activate
+python examples/python/example.py
+```
+
+This demonstrates the scalatrix functionality in Python, including scale generation and pitch calculations.
+
+## Publishing to PyPI
+
+To publish the package to PyPI:
+
+1. Ensure you have an account on [PyPI](https://pypi.org/) and [Test PyPI](https://test.pypi.org/)
+
+2. Install build tools:
+   ```bash
+   pip install build twine
+   ```
+
+3. Build the package:
+   ```bash
+   python -m build
+   ```
+
+4. Upload to Test PyPI first (recommended):
+   ```bash
+   twine upload --repository testpypi dist/*
+   ```
+
+5. Test the installation from Test PyPI:
+   ```bash
+   pip install --index-url https://test.pypi.org/simple/ scalatrix
+   ```
+
+6. If everything works, upload to the real PyPI:
+   ```bash
+   twine upload dist/*
+   ```
 
 ## Notes
 
