@@ -26,7 +26,7 @@ std::string LabelCalculator::accidentalString(const MOS& mos, Vector2i v, bool s
 std::string LabelCalculator::nodeLabelDigit(const MOS& mos, Vector2i v) {
     int dia = (v.x + v.y + 128*mos.n) % mos.n;
     std::string result = std::to_string(dia+1);
-    result = accidentalString(mos, v) + result;
+    result = accidentalString(mos, v, mos.L_vec.x == 0) + result;
     return result;
 }
 
@@ -34,7 +34,7 @@ std::string LabelCalculator::nodeLabelLetter(const MOS& mos, Vector2i v) {
     int dia = (v.x + v.y + 2 + 128*mos.n) % mos.n;
     char letter = 'A' + dia;
     std::string result(1, letter);
-    result = accidentalString(mos, v) + result;
+    result = accidentalString(mos, v, mos.L_vec.x == 0) + result;
     return result;
 }
 

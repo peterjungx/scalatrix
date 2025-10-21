@@ -6,7 +6,7 @@ import scalatrix as sx
 
 mos = sx.MOS.fromG(4, 11, 0.585, 1.0, 1)
 mos12tet = sx.MOS.fromG(3, 1, 7/12, 1.0, 1)
-pitchset = sx.PitchSet.generateETPitchSet(12, 1.0)
+pitchset = sx.PitchSet.generateETPitchSet(12, 1.0, 0.0, 1.0)
 primelist = sx.PrimeList.generateDefaultPrimeList(6)
 primelist = primelist[0:2] + primelist[3:]
 
@@ -39,3 +39,8 @@ print(220*2**(9/12))
 
 
 
+
+print("\nLabels for mos12tet scale degrees:")
+for n in mos12tet.base_scale.getNodes():
+    label = mos12tet.nodeLabelLetterWithOctaveNumber(n.natural_coord, 4)
+    print(f"Degree {int(n.natural_coord.x)}: {label}")

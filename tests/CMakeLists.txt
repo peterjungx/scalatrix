@@ -19,27 +19,27 @@ FetchContent_MakeAvailable(Catch2)
 
 
 # Include directories
-include_directories(${CMAKE_SOURCE_DIR}/../include)
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # Common source files
 set(SCALATRIX_SOURCES
-    ${CMAKE_SOURCE_DIR}/../src/params.cpp
-    ${CMAKE_SOURCE_DIR}/../src/affine_transform.cpp
-    ${CMAKE_SOURCE_DIR}/../src/linear_solver.cpp
-    ${CMAKE_SOURCE_DIR}/../src/scale.cpp
-    ${CMAKE_SOURCE_DIR}/../src/mos.cpp
-    ${CMAKE_SOURCE_DIR}/../src/pitchset.cpp
-    ${CMAKE_SOURCE_DIR}/../src/lattice.cpp
-    ${CMAKE_SOURCE_DIR}/../src/label_calculator.cpp
-    ${CMAKE_SOURCE_DIR}/../src/node.cpp
+    ${CMAKE_SOURCE_DIR}/src/params.cpp
+    ${CMAKE_SOURCE_DIR}/src/affine_transform.cpp
+    ${CMAKE_SOURCE_DIR}/src/linear_solver.cpp
+    ${CMAKE_SOURCE_DIR}/src/scale.cpp
+    ${CMAKE_SOURCE_DIR}/src/mos.cpp
+    ${CMAKE_SOURCE_DIR}/src/pitchset.cpp
+    ${CMAKE_SOURCE_DIR}/src/lattice.cpp
+    ${CMAKE_SOURCE_DIR}/src/label_calculator.cpp
+    ${CMAKE_SOURCE_DIR}/src/node.cpp
 )
 
 # Test executables
-add_executable(test_affine_transform 
+add_executable(test_affine_transform
     test_affine_transform.cpp
-    ${CMAKE_SOURCE_DIR}/../src/params.cpp
-    ${CMAKE_SOURCE_DIR}/../src/affine_transform.cpp
-    ${CMAKE_SOURCE_DIR}/../src/linear_solver.cpp
+    ${CMAKE_SOURCE_DIR}/src/params.cpp
+    ${CMAKE_SOURCE_DIR}/src/affine_transform.cpp
+    ${CMAKE_SOURCE_DIR}/src/linear_solver.cpp
 )
 
 add_executable(test_scale
