@@ -2,11 +2,11 @@
 
 namespace scalatrix {
 
-std::string LabelCalculator::accidentalString(const MOS& mos, Vector2i v, bool swap) {
-    int acc = floor( ((swap?-1:1)* (v.y * mos.a0 - v.x * mos.b0) - 2.0) / mos.n0 + 1);
-    if (mos.L_vec.x == 1){
-        acc *= -1;
-    }
+std::string LabelCalculator::accidentalString(const MOS& mos, Vector2i v) {
+    int acc_sign = mos.L_vec.x == 1 ? 1 : -1;
+    int neutral_mode =  mos.L_vec.x == 1 ? 1 : mos.n0 - 2;
+    int n_generators = v.x * mos.b0 - v.y * mos.a0;
+    int acc = acc_sign * floor((n_generators + neutral_mode + 0.5) / mos.n0);
     std::string result = "";
     if (acc != 0) {
         while (acc < 0) {
@@ -26,7 +26,7 @@ std::string LabelCalculator::accidentalString(const MOS& mos, Vector2i v, bool s
 std::string LabelCalculator::nodeLabelDigit(const MOS& mos, Vector2i v) {
     int dia = (v.x + v.y + 128*mos.n) % mos.n;
     std::string result = std::to_string(dia+1);
-    result = accidentalString(mos, v, mos.L_vec.x == 0) + result;
+    result = accidentalString(mos, v) + result;
     return result;
 }
 
@@ -34,7 +34,7 @@ std::string LabelCalculator::nodeLabelLetter(const MOS& mos, Vector2i v) {
     int dia = (v.x + v.y + 2 + 128*mos.n) % mos.n;
     char letter = 'A' + dia;
     std::string result(1, letter);
-    result = accidentalString(mos, v, mos.L_vec.x == 0) + result;
+    result = accidentalString(mos, v) + result;
     return result;
 }
 

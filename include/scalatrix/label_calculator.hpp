@@ -43,7 +43,7 @@ private:
     MOS diatonic_mos;
     
     // Helper method to calculate accidental string
-    static std::string accidentalString(const MOS& mos, Vector2i v, bool swap = false);
+    static std::string accidentalString(const MOS& mos, Vector2i v);
 };
 
 }
