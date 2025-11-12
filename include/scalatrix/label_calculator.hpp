@@ -26,8 +26,8 @@ public:
     static std::string deviationLabel(const Node& node, double thresholdCents = 0.1, 
                                       bool compareWithTempered = false);
 
-    std::string noteLabelNormalized(MOS& mos, Vector2i v) {
-        if (mos.generator > 4.0/7 && mos.generator < 3.0/5 && mos.equave > 0.9 && mos.equave < 1.2)
+    std::string noteLabelNormalized(MOS& mos, Vector2i v, bool override_letter_labels = false) {
+        if (mos.generator > 4.0/7 && mos.generator < 3.0/5 && mos.equave > 0.9 && mos.equave < 1.2 && !override_letter_labels)
         {
             Vector2i diatonic_coord = diatonic_mos.mapFromMOS (mos, v);
             return nodeLabelLetter(diatonic_mos, diatonic_coord);
