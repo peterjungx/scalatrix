@@ -58,6 +58,7 @@ PYBIND11_MODULE(scalatrix, m) {
         .def_readwrite("tx", &IntegerAffineTransform::tx)
         .def_readwrite("ty", &IntegerAffineTransform::ty)
         .def("apply", &IntegerAffineTransform::apply)
+        .def("applyAffine", &IntegerAffineTransform::applyAffine)
         .def("inverse", &IntegerAffineTransform::inverse)
         .def("__mul__", [](const IntegerAffineTransform &a, const Vector2i &b) {
             return a.apply(b);
