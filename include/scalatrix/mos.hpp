@@ -10,7 +10,7 @@ namespace scalatrix {
 class MOS {
 public:
 
-    int a, b, n, a0, b0, n0, mode;
+    int a, b, n, a0, b0, n0, mode, nL, nS;
     int repetitions, depth;
     double equave; // log2(frequency ratio) of equave (interval of equivalence)
     double period; // log2(frequency ratio) of MOS period

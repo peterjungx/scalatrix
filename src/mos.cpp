@@ -107,11 +107,15 @@ void MOS::updateVectors(){
         this->s_vec = v2;
         this->L_fr = v1_fr;
         this->s_fr = v2_fr;
+        this->nL = a;
+        this->nS = b;
     } else {
         this->L_vec = v2;
         this->s_vec = v1;
         this->L_fr = v2_fr;
         this->s_fr = v1_fr;
+        this->nL = b;
+        this->nS = a;
     }
     this->chroma_vec = this->L_vec - this->s_vec;
     this->chroma_fr = this->L_fr - this->s_fr;
