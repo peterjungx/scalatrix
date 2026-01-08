@@ -69,8 +69,10 @@ if(BUILD_PYTHON)
         SUFFIX ".so"
     )
     
+    # Install to root for scikit-build-core packaging
+    # scikit-build-core will handle placing it in site-packages
     install(TARGETS scalatrix_python
-        LIBRARY DESTINATION ${Python3_SITELIB}
+        LIBRARY DESTINATION .
     )
 endif()
 
