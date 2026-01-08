@@ -115,6 +115,8 @@ PYBIND11_MODULE(scalatrix, m) {
         .def_readwrite("a0", &MOS::a0)
         .def_readwrite("b0", &MOS::b0)
         .def_readwrite("n0", &MOS::n0)
+        .def_readwrite("nL", &MOS::nL)
+        .def_readwrite("nS", &MOS::nS)
         .def_readwrite("mode", &MOS::mode)
         .def_readwrite("repetitions", &MOS::repetitions)
         .def_readwrite("depth", &MOS::depth)
